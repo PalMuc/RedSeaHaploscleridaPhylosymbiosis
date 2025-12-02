@@ -54,11 +54,14 @@ asv_heat <- asv_heat[sample_order, ]
 # Order ASVs (columns) according to excel file
 asv_order <- ASV_Order_Heatmap$ASV  # Use as ASV column
 asv_order <- asv_order[asv_order %in% colnames(asv_heat)] # Filter for only those ASVs present
+
 # Check number of matches
 print(paste(length(asv_order)))
 print(paste(ncol(asv_heat)))
+
 # Sort the columns according to ASV order
 asv_heat <- asv_heat[, asv_order]
+
 # Verify
 print(head(colnames(asv_heat), 10))
 ```
