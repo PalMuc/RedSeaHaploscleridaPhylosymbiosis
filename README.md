@@ -10,7 +10,7 @@ Joëlle van der Sprong <sup>1,§</sup>; Vani Tirumalasetty <sup>1</sup>; Simone Sc
 
 <sup>3</sup> Bavarian State Collections of Palaeontology and Geology, Munich, Germany
 
-----------
+
 
 <sup>§</sup> corresponding authors: j.vandersprong@uni-goettingen.de & s.vargas@lmu.de
 
@@ -28,6 +28,8 @@ and this other tutorial: [https://astrobiomike.github.io/amplicon/dada2_workflow
 insert abstract here...
 
 ## Description
+
+insert description here...
 
 ### Citation
 
