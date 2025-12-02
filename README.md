@@ -4,7 +4,7 @@ Joëlle van der Sprong <sup>1,§</sup>; Vani Tirumalasetty <sup>1</sup>; Simone Sc
 
 ----------
 
-<sup>1</sup> Department of Earth and Environmental Sciences, Palaeontology and Geobiology, Ludwig-Maximilians-Universität MÃ¼nchen, Munich, Germany
+<sup>1</sup> Department of Earth and Environmental Sciences, Palaeontology and Geobiology, Ludwig-Maximilians-Universität München, Munich, Germany
 
 <sup>2</sup> GeoBio-Center, Ludwig-Maximilians-Universität München, Munich, Germany
 
