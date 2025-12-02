@@ -23,4 +23,18 @@ The following code is based on the *dada2* tutorial available at [https://benjjn
 and this other tutorial: [https://astrobiomike.github.io/amplicon/dada2_workflow_ex](https://astrobiomike.github.io/amplicon/dada2_workflow_ex)
 
 
+## Abstract
+
+insert abstract here...
+
+## Description
+
+### Citation
+
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
+
+
 
