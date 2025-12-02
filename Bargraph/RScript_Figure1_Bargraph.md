@@ -12,9 +12,9 @@ Make sure the following datasets are loaded:
 
 ### Check data
 ```python
-dim(asv_tab_noMt_noChloro)  # Should be: ASVs x Samples
-dim(red_sea_taxa.print_noMt_noChloro)  # Should be: ASVs x 7 (taxonomy ranks)
-dim(sample_info)  # Should be: Samples x metadata columns
+dim(asv_tab_noMt_noChloro)  #ASVs x Samples
+dim(red_sea_taxa.print_noMt_noChloro)  #ASVs x Taxonomy ranks
+dim(sample_info)  # Samples x metadata columns
 ```
 
 ### Step 1: Create phyloseq object
