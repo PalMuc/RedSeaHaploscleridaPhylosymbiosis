@@ -215,7 +215,7 @@ plot_data_filtered$Clade <- factor(plot_data_filtered$Clade,
                                    levels = clade_phylo_order)
 ```
 
-### Step 13: Create the barplot
+### Step 13: Create the bargraph
 ```python
 library(ggplot2)
 
