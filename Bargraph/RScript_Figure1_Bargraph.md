@@ -122,7 +122,7 @@ dim(plot_data)
 head(plot_data)
 ```
 
-### Step 10: Load phylogeny to get correct sample order (necessary for Step 12)
+### Step 10: Load phylogeny to get correct sample order
 ```python
 library(ape)
 rooted_red_sea_phylo <- read.tree("./Data/Rooted_RAxML_RSHaplos_25.tre")
