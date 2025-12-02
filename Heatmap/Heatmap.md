@@ -1,6 +1,6 @@
 # Configuration Heatmap Red Sea Haplosclerida-ASVs 
 
-Load necessary libraries
+### Load necessary libraries
 ```python
 library(matrixStats)
 library(circlize)
