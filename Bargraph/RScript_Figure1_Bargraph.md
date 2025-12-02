@@ -140,15 +140,15 @@ sum(is.na(plot_data$Sample))
 ### Step 11: Define color palette
 ```python
 phylum_colors <- c(
-  "Alphaproteobacteria" = "#5E81AC",    # Blauw-grijs
-  "Gammaproteobacteria" = "#BF616A",    # Gedempd rood
-  "Cyanobacteria" = "#EBCB8B",          # Warm zand/goud
-  "Bacteroidota" = "#A3BE8C",           # Gedempd groen
-  "Chloroflexi" = "#B48EAD",            # Gedempd paars
-  "Acidobacteriota" = "#88C0D0",        # Licht blauw
-  "Actinobacteriota" = "#D08770",       # Terra cotta
+  "Alphaproteobacteria" = "#5E81AC",    # Blue grey
+  "Gammaproteobacteria" = "#BF616A",    # Red
+  "Cyanobacteria" = "#EBCB8B",          # Gold
+  "Bacteroidota" = "#A3BE8C",           # Green
+  "Chloroflexi" = "#B48EAD",            # Purple
+  "Acidobacteriota" = "#88C0D0",        # Light blue
+  "Actinobacteriota" = "#D08770",       # Orange/Red
   "Planctomycetota" = "#8FBCBB",        # Turquoise
-  "Other" = "#4C566A"                   # Donkergrijs
+  "Other" = "#4C566A"                   # Dark grey
 )
 ```
 
