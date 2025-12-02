@@ -1,16 +1,13 @@
----
-title: "Genome-wide exon capture uncovers host-microbiome co-diversification in Red Sea Sponges"
-author: "Van der Sprong et al."
-date: "`r Sys.Date()`"
-output: html_document
----
+# R-Script Phylosymbiosis Analysis
 
-```{r setup, include=FALSE}
+
+### Setup
+```python
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r prep}
-
+### Preparation
+```python
 if(!requireNamespace("dada2", quietly = TRUE)){
   print("dada2 not installed, installing now...")
   if(!requireNamespace("BiocManager", quietly = TRUE)) {
@@ -30,19 +27,14 @@ if(!requireNamespace("dada2", quietly = TRUE)){
   library(RColorBrewer)
   library(phytools)
 }
-
 ```
-
-## Load the clean reads
+### Load the clean reads
 
 Samples "GW3237", "GW3325", "GW3404", "GW3416", "GW3494", "GW3580", "GW4166", "GW4251", "GW5875", "GW6059", "GW6104", "GW6140", "GW6158", and "GW6196" were discarded due to low read counts (<5000).
 
 Samples "GW3524", "GW4232", "GW5899", and "GW6180" were discarded due to missing UCE data.
 
-
-
-```{r load reads}
-
+```python
 path <- "./Data/Red_Sea_Prokaryotic_Microbiomes/Reads/"
 #list.files(path)
 
@@ -55,13 +47,12 @@ sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1)
 
 plotQualityProfile(fnFs[1:2])
 plotQualityProfile(fnRs[1:2])
-
 ```
 
+### Filter reads
 
-##  Place filtered files in filtered/ subdirectory
-```{r filter reads}
-
+Place filtered files in filtered/ subdirectory
+```python
 filtFs <- file.path(path, "Dada2_Filtered", paste0(sample.names, "_F_dada2.clean.fastq.gz"))
 filtRs <- file.path(path, "Dada2_Filtered", paste0(sample.names, "_R_dada2.clean.fastq.gz"))
 names(filtFs) <- sample.names
@@ -70,69 +61,60 @@ names(filtRs) <- sample.names
 filter_output <- filterAndTrim(fnFs, filtFs, fnRs, filtRs,
               maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE,
               compress=TRUE, multithread=TRUE)
-
 ```
 
-```{r learn errors}
-
+Learn Errors
+```python
 errF <- learnErrors(filtFs, multithread=TRUE)
 errR <- learnErrors(filtRs, multithread=TRUE)
 
 plotErrors(errF, nominalQ=TRUE)
-
 ```
 
-```{r Sample inference}
-
+Sample inference
+```python
 dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
 dadaRs <- dada(filtRs, err=errR, multithread=TRUE)
-
 ```
 
-```{r merge reads}
-
+Merge reads
+```python
 merged_pairs <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
-
 ```
 
-
-```{r Get sequence table}
-
+Get sequence table
+```python
 seqtab <- makeSequenceTable(merged_pairs)
 seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=TRUE, verbose=TRUE)
 sum(seqtab.nochim)/sum(seqtab)
-
 ```
-```{r track reads}
 
+Track reads
+```python
 getN <- function(x) sum(getUniques(x))
 track <- cbind(filter_output, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(merged_pairs, getN), rowSums(seqtab.nochim), rowSums(seqtab.nochim)/filter_output[,2])
 # If processing a single sample, remove the sapply calls: e.g. replace sapply(dadaFs, getN) with getN(dadaFs)
 colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim", "surviving reads")
 rownames(track) <- sample.names
 #rownames(track[track[,1]<5000,])
-
 ```
 
-```{r Assign taxonomy}
-
+### Assign Taxonomy
+```python
 red_sea_taxa <- assignTaxonomy(seqtab.nochim,"./Data/Red_Sea_Prokaryotic_Microbiomes/SilvaDB/v138/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
 
 red_sea_taxa <- addSpecies(red_sea_taxa, "./Data/Red_Sea_Prokaryotic_Microbiomes/SilvaDB/v138/silva_species_assignment_v138.1.fa.gz")
-
 ```
 
-```{r Inspect taxonomy table}
-
+Inspect taxonomy table
+```python
 red_sea_taxa.print <- red_sea_taxa # Removing sequence rownames for display only
 rownames(red_sea_taxa.print) <- NULL
 head(red_sea_taxa.print)
-
-
 ```
 
-```{r extract ASV table, etc}
-
+Extract ASV table
+```python
 # giving our seq headers more manageable names (ASV_1, ASV_2...)
 asv_seqs <- colnames(seqtab.nochim)
 asv_headers <- vector(dim(seqtab.nochim)[2], mode="character")
@@ -168,15 +150,13 @@ write.table(asv_tab_noMt_noChloro, "./Data/ASVs_Counts_noMt_noChloro.tsv", sep="
 red_sea_taxa.print_noMt_noChloro <- red_sea_taxa.print[!(row.names(red_sea_taxa.print) %in% c(mt_ASVs, chloro_ASVs)),]
 
 write.table(red_sea_taxa.print_noMt_noChloro, "./Data/ASVs_Taxonomy_noMt_noChloro.tsv", sep = "\t", quote=F, col.names=NA)
-
-
 ```
 
+### NMDS Plots - Bray-Curtis dissimilarity
 
 The NMDS of the samples using groupings based on a phylogenetic analysis of the host sponges is presented below using the Bray-Curtis dissimilarity. 
 
-```{r NMDS by groups}
-
+```python
 #define a function to plot the nmds in ggplot2 using the same coordinates for each group of species
 ggplot_nmds <- function(points, colors, xmax, xmin, ymax, ymin){
 
@@ -219,7 +199,6 @@ nmds_points <- as.data.frame(nmds$points)
 #bind the nmds and sample info matrix
 nmds_points <- cbind(nmds_points, sample_info)
 
-##### VANAF HIER NMDS PLOTS AANPASSEN!!!!
 
 #select only samples assigned to a clade.
 nmds_points <- nmds_points[!is.na(nmds_points$Clade),]
@@ -232,7 +211,7 @@ example_clade_one_plot <- ggplot_nmds(nmds_points[nmds_points$Clade %in% example
 
 ggsave("Example_Clade_One_Plot.svg", example_clade_one_plot, width = 30, height = 30, units = "cm")
 
-###########
+############
 
 example_clade_two <- c("G18","G19","G20","G21","G22")
 example_clade_two_col_vector <- c("tan1","darkseagreen","maroon2","black","red4")
@@ -279,15 +258,14 @@ ggsave("Example_Clade_Six_Plot.svg", example_clade_six_plot, width = 30, height 
 
 
 #Color palette, from: https://stackoverflow.com/questions/15282580/how-to-generate-a-number-of-most-distinctive-colors-in-r
-
-
 ```
 
-I want to test for a significant correlation between the phylogenetic distance and the Bray-Curtis dissimilarity of the microbiomes.
+### Statistical Tests
 
+Test for a significant correlation between the phylogenetic distance and the Bray-Curtis dissimilarity of the microbiomes.
 
-```{r Phylo mantel}
-
+Phylo-Mantel Test
+```python
 #use APE to get a distance matrix from a phylogeny.
 
 red_sea_phylo <- read.tree("./Data/RAxML_RSHaplos_25.tre")
@@ -300,12 +278,10 @@ red_sea_micro_dist <- vegdist(t(asv_tab_noMt_noChloro), method = "bray")
 row.names(red_sea_phylo_dist) %in% row.names(as.matrix(red_sea_micro_dist))
 
 phylo_micro_mantel <- mantel(as.matrix(red_sea_micro_dist), red_sea_phylo_dist, method="kendall", permutations = 999, na.rm = T, parallel = 24)
-
 ```
 
-```{r Anosim and Adonis2}
-
-
+Anosim and Adonis2
+```python
 samples_with_no_clade_assignment <- sample_info[is.na(sample_info$Clade),]$Sample
 
 dim(as.matrix(red_sea_micro_dist))
@@ -329,11 +305,10 @@ adonis2(red_sea_micro_dist_noNAs~red_sea_clades_noNAs)
 red_sea_clades_noNAs_pairwise_adonis <- pairwiseAdonis::pairwise.adonis(x = red_sea_micro_dist_noNAs, factors = red_sea_clades_noNAs, p.adjust.m = "BH" ,perm = 999)
 
 unique(red_sea_clades_noNAs)
-
 ```
 
-```{r alpha diversity of the groups}
-
+Alpha diversity of the groups
+```python
 alpha <- fisher.alpha(t(asv_tab_noMt_noChloro))
 
 #root_node <- getMRCA(red_sea_phylo, c("GW3092", "GW6015"))
@@ -391,34 +366,5 @@ for(i in 1:Ntip(rooted_red_sea_phylo)){
  }
 
 #cladelabels(red_sea_phylo_rooted, clade_names, clade_ancestral_nodes, wing.length = 0, offset = 0.5)
-
 ```
-
-
-
-<!-- ```{r Prep phyloseq object} -->
-
-<!-- theme_set(theme_bw()) -->
-<!-- samples.out <- rownames(seqtab.nochim) -->
-<!-- #here load a df with sample to sample info for figure annotations, I guess -->
-<!-- #samdf <- data.frame(Subject=subject, Gender=gender, Day=day) -->
-<!-- #samdf$When <- "Early" -->
-<!-- #samdf$When[samdf$Day>100] <- "Late" -->
-<!-- #rownames(samdf) <- samples.out -->
-
-
-<!-- ps <- phyloseq(otu_table(seqtab.nochim, taxa_are_rows=FALSE),  -->
-<!--                #sample_data(samdf),# add sample data here. -->
-<!--                tax_table(red_sea_taxa)) -->
-
-<!-- plot_richness(ps, measures=c("Shannon", "Simpson"))#, x="Day", , color="When") -->
-
-
-<!-- ps.prop <- transform_sample_counts(ps, function(otu) otu/sum(otu)) -->
-<!-- ord.nmds.bray <- ordinate(ps.prop, method="NMDS", distance="bray", trymax=100) -->
-
-<!-- plot_ordination(ps, ord.nmds.bray, title="Bray NMDS") -->
-
-<!-- ``` -->
-
 
