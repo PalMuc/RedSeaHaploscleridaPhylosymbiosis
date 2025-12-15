@@ -86,6 +86,73 @@ ggsave("Beta_diversity_results/PCoA_basic.pdf", plot_pcoa_basic,
        width = 10, height = 7)
 ```
 
+### PCoA + 95% confidence ellipses
+```python
+plot_pcoa_ellipse <- ggplot(pcoa_coords, aes(x = PC1, y = PC2, fill = Clade, color = Clade)) +
+  stat_ellipse(aes(group = Clade, color = Clade), type = "t", level = 0.95, 
+               geom = "polygon", alpha = 0, fill = NA, show.legend = FALSE, linewidth = 0.5) +
+  geom_point(size = 4, alpha = 0.8, shape = 21, color = "black") +
+  scale_fill_manual(values = colour_clades) +
+  scale_color_manual(values = colour_clades) +
+  labs(
+    title = "PCoA with 95% confidence ellipses",
+    x = paste0("PC1 (", round(variance_explained[1], 1), "%)"),
+    y = paste0("PC2 (", round(variance_explained[2], 1), "%)"),
+    fill = "Clade"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 13, face = "bold"),
+    legend.title = element_text(size = 12, face = "bold"),
+    legend.text = element_text(size = 10),
+    legend.position = "right",
+    panel.grid.minor = element_blank()
+  )
+
+print(plot_pcoa_ellipse)
+ggsave("Beta_diversity_results/PCoA_with_ellipses.pdf", plot_pcoa_ellipse, 
+       width = 12, height = 8)
+```
+
+### PCoA + centroids
+```python
+# Calculate centroids per clade
+centroids <- pcoa_coords %>%
+  group_by(Clade) %>%
+  summarise(
+    PC1_centroid = mean(PC1),
+    PC2_centroid = mean(PC2),
+    .groups = "drop"
+  )
+
+plot_pcoa_centroids <- ggplot(pcoa_coords, aes(x = PC1, y = PC2, fill = Clade)) +
+  geom_point(size = 3, alpha = 0.6, shape = 21, color = "grey30") +
+  geom_point(data = centroids, aes(x = PC1_centroid, y = PC2_centroid, fill = Clade),
+             size = 6, shape = 23, color = "black", stroke = 1.5) +
+  geom_text(data = centroids, aes(x = PC1_centroid, y = PC2_centroid, label = Clade),
+            size = 2.5, fontface = "bold") +
+  scale_fill_manual(values = colour_clades) +
+  labs(
+    title = "PCoA with clade centroids",
+    x = paste0("PC1 (", round(variance_explained[1], 1), "%)"),
+    y = paste0("PC2 (", round(variance_explained[2], 1), "%)"),
+    fill = "Clade"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    legend.position = "none",
+    panel.grid.minor = element_blank()
+  )
+
+print(plot_pcoa_centroids)
+ggsave("Beta_diversity_results/PCoA_centroids.pdf", plot_pcoa_centroids, 
+       width = 10, height = 8)
+```
+
+
 
 
 
