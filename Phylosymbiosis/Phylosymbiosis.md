@@ -444,7 +444,7 @@ write.csv(phylo_dist_matrix_match,
           "Phylosymbiosis_results/phylo_distance_matrix_matched.csv")
 ```
 
-### Robinson Foulds + Entanglement
+### Robinson Foulds
 ```python
 # Create microbiome dendrograms from matched distance matrices 
 
