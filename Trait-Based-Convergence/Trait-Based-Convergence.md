@@ -257,6 +257,49 @@ write.csv(trait_vs_phylo,
           row.names = FALSE)
 ```
 
+## PERMANOVA
+
+### Trait effect
+```python
+# Subset to samples with trait classification (exclude > Intermediate)
+samples_HMA_LMA <- rownames(metadata_all)[metadata_all$Microbial_Type %in% c("HMA", "LMA")]
+
+phyloseq_HMA_LMA <- prune_samples(samples_HMA_LMA, phyloseq_compositional)
+
+# Get distance for these samples
+dist_HMA_LMA <- distance(phyloseq_HMA_LMA, method = "bray")
+metadata_HMA_LMA <- as(sample_data(phyloseq_HMA_LMA), "data.frame")
+
+# PERMANOVA: Trait effect
+# How many of the total microbiome variation can be explained by HMA vs. LMA classification?
+permanova_trait <- adonis2(
+  dist_HMA_LMA ~ Microbial_Type,
+  data = metadata_HMA_LMA,
+  permutations = 999
+)
+
+print(permanova_trait)
+
+# Save results
+write.csv(as.data.frame(permanova_trait),
+          "Phylosymbiosis_results/permanova_trait_HMA_LMA.csv")
+```
+
+### Clade effect (for comparison)
+```python
+# How many of the microbiome variation observed can be explained by the specific clade identity?
+permanova_clade_HMA_LMA <- adonis2(
+  dist_HMA_LMA ~ Clade,
+  data = metadata_HMA_LMA,
+  permutations = 999
+)
+
+print(permanova_clade_HMA_LMA)
+
+# Save results
+write.csv(as.data.frame(permanova_clade_HMA_LMA),
+          "Phylosymbiosis_results/permanova_clade_within_HMA_LMA.csv")
+```
 
 
 
