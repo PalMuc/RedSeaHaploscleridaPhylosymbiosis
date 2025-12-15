@@ -214,7 +214,9 @@ write.csv(data.frame(Order = names(colour_orders), Colour = colour_orders),
           "colour_orders.csv", row.names = FALSE)
 ```
 
-### Beta-diversity - NMDS plots
+## Beta-diversity
+
+### NMDS plots
 ```python
 # Create output directory
 dir.create("Beta_diversity_results", showWarnings = FALSE)
@@ -267,7 +269,7 @@ ggsave(filename = "Plot_NMDS_bray.png",
        path = "Beta_diversity_results")
 ```
 
-### Beta-diversity - PERMANOVA
+### PERMANOVA
 ```python
 # Get metadata and remove NAs
 metadata <- as(sample_data(phyloseq_compositional), "data.frame")
@@ -294,7 +296,7 @@ write.csv(as.data.frame(permanova_result),
 ```
 
 
-### Beta-diversity - Pairwise PERMANOVA (post-hoc test)
+### Pairwise PERMANOVA (post-hoc test)
 ```python
 # Pairwise comparisons between clades
 pairwise_result <- pairwise.adonis(
@@ -313,5 +315,10 @@ write.csv(as.data.frame(pairwise_result),
           "Beta_diversity_results/pairwise_permanova_clade.csv")
 ```
 
+## Mantel Tests
+
+### Data preparation
+```python
+``
 
 
