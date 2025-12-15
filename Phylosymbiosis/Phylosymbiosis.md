@@ -214,7 +214,7 @@ write.csv(data.frame(Order = names(colour_orders), Colour = colour_orders),
           "colour_orders.csv", row.names = FALSE)
 ```
 
-### Beta-diversity analysis - NMDS plots
+### Beta-diversity - NMDS plots
 ```python
 # Create output directory
 dir.create("Beta_diversity_results", showWarnings = FALSE)
