@@ -127,6 +127,38 @@ geo_dist_all <- geo_dist_matrix[samples_all_data, samples_all_data]
 metadata_all <- metadata_analysis[samples_all_data, ]
 ```
 
+## Partial Mantel Tests
+
+### Testing phylogeny vs geography effects on microbiome
+```python
+# Test 1: What is the effect of phylogeny on the microbiome, when geography is excluded
+partial_mantel_phylo <- mantel.partial(
+  as.dist(micro_dist_all),
+  as.dist(phylo_dist_all),
+  as.dist(geo_dist_all),
+  method = "spearman",
+  permutations = 9999
+)
+
+cat("Phylogeny | Geography (controlling for geography):\n")
+cat("  Mantel r =", round(partial_mantel_phylo$statistic, 4), "\n")
+cat("  p-value =", partial_mantel_phylo$signif, "\n")
+if(partial_mantel_phylo$signif < 0.001) cat("  ***\n")
+
+# Test 2: What is the effect of geography on the microbiome, when phylogeny is exlcuded
+partial_mantel_geo <- mantel.partial(
+  as.dist(micro_dist_all),
+  as.dist(geo_dist_all),
+  as.dist(phylo_dist_all),
+  method = "spearman",
+  permutations = 9999
+)
+
+cat("\nGeography | Phylogeny (controlling for phylogeny):\n")
+cat("  Mantel r =", round(partial_mantel_geo$statistic, 4), "\n")
+cat("  p-value =", partial_mantel_geo$signif, "\n")
+if(partial_mantel_geo$signif < 0.001) cat("  ***\n")
+```
 
 
 
