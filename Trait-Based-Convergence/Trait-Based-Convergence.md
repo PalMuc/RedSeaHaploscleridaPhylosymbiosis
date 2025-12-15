@@ -160,6 +160,7 @@ simple_mantel_geo <- mantel(
   permutations = 9999
 )
 
+
 # Save results
 partial_mantel_results <- data.frame(
   Test = c("Phylogeny | Geography", 
@@ -188,6 +189,34 @@ write.csv(partial_mantel_results,
 
 print(partial_mantel_results[, 1:3])
 ```
+
+### Trait (HMA vs. LMA) vs. phylogeny comparison
+```python
+# Create trait distance matrix
+# 0 if same type (HMA-HMA or LMA-LMA), 1 if different type
+trait_vector <- metadata_all$Microbial_Type
+names(trait_vector) <- rownames(metadata_all)
+
+# Create distance matrix
+n_samples <- length(trait_vector)
+trait_dist_matrix <- matrix(0, nrow = n_samples, ncol = n_samples)
+rownames(trait_dist_matrix) <- names(trait_vector)
+colnames(trait_dist_matrix) <- names(trait_vector)
+
+for(i in 1:n_samples) {
+  for(j in 1:n_samples) {
+    if(trait_vector[i] != trait_vector[j]) {
+      trait_dist_matrix[i, j] <- 1
+    }
+  }
+}
+
+# Save trait distance matrix
+write.csv(trait_dist_matrix,
+          "Phylosymbiosis_results/trait_distance_matrix.csv")
+```
+
+
 
 
 
