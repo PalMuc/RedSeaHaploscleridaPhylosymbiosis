@@ -1,15 +1,11 @@
 # Configuration Heatmap Red Sea Haplosclerida-ASVs 
 
-### Load necessary libraries
+Before starting with this pipeline, please check the Phylosymbiosis pipeline first!
+
+### Setup libraries
 ```python
 library(matrixStats)
 library(circlize)
-
-#if (!require("BiocManager", quietly = TRUE))
-#  install.packages("BiocManager")
-#
-#BiocManager::install("ComplexHeatmap")
-
 library(ComplexHeatmap)
 ```
 
@@ -86,6 +82,7 @@ Heatmap(
   heatmap_legend_param = list(title = "square root of rel. abundance (%)")
 )
 ```
+
 
 
 
