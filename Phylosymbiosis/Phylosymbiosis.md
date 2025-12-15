@@ -444,5 +444,53 @@ write.csv(phylo_dist_matrix_match,
           "Phylosymbiosis_results/phylo_distance_matrix_matched.csv")
 ```
 
+### Robinson Foulds + Entanglement
+```python
+# Create microbiome dendrograms from matched distance matrices 
+
+# Use the already matched distance matrices from Mantel tests
+# Convert to dist objects for hclust
+dist_bray_for_hclust <- as.dist(dist_matrix_bray_match)
+dist_wunifrac_for_hclust <- as.dist(dist_matrix_wunifrac_match)
+dist_uunifrac_for_hclust <- as.dist(dist_matrix_uunifrac_match)
+
+# Create dendrograms (UPGMA clustering)
+micro_dend_bray <- hclust(dist_bray_for_hclust, method = "average")
+micro_dend_wunifrac <- hclust(dist_wunifrac_for_hclust, method = "average")
+micro_dend_uunifrac <- hclust(dist_uunifrac_for_hclust, method = "average")
+
+# Prune host tree to matching samples
+host_tree_pruned <- keep.tip(host_tree, samples_in_both)
+
+
+# Calculate normalised Robinson-Foulds distances
+
+# Convert dendrograms to phylo objects
+micro_tree_bray <- as.phylo(micro_dend_bray)
+micro_tree_wunifrac <- as.phylo(micro_dend_wunifrac)
+micro_tree_uunifrac <- as.phylo(micro_dend_uunifrac)
+
+# Calculate nRF (0 = identical, 1 = completely different)
+nRF_bray <- RF.dist(host_tree_pruned, micro_tree_bray, normalize = TRUE)
+cat("Bray-Curtis nRF:", round(nRF_bray, 4), "\n")
+
+nRF_wunifrac <- RF.dist(host_tree_pruned, micro_tree_wunifrac, normalize = TRUE)
+cat("Weighted UniFrac nRF:", round(nRF_wunifrac, 4), "\n")
+
+nRF_uunifrac <- RF.dist(host_tree_pruned, micro_tree_uunifrac, normalize = TRUE)
+cat("Unweighted UniFrac nRF:", round(nRF_uunifrac, 4), "\n")
+
+
+## Cospeciation tests (RF with p-values)
+
+RF_bray <- cospeciation(host_tree_pruned, micro_tree_bray, 
+                        distance = "RF", permutations = 999)
+
+RF_wunifrac <- cospeciation(host_tree_pruned, micro_tree_wunifrac, 
+                            distance = "RF", permutations = 999)
+
+RF_uunifrac <- cospeciation(host_tree_pruned, micro_tree_uunifrac, 
+                            distance = "RF", permutations = 999)
+```
 
 
