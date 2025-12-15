@@ -61,13 +61,13 @@ rownames(metadata_analysis) <- metadata_analysis$Sample
 ```python
 # Based on microbiome composition patterns from manuscript:
 # HMA clades: G01, G06, G12 (Chloroflexi-Acidobacteria enriched)
-# LMA clades: G03, G04, G05, G07, G08, G09, G10, G11 (Cyanobacteria dominated)
+# LMA clades: G03, G04, G05, G07, G09, G15, G16 (Cyanobacteria dominated)
 # Intermediate/Other: remaining clades
 
 # Add HMA/LMA classification
 metadata_analysis$Microbial_Type <- case_when(
   metadata_analysis$Clade %in% c("G01", "G06", "G12") ~ "HMA",
-  metadata_analysis$Clade %in% c("G03", "G04", "G05", "G07", "G08", "G09", "G10", "G11") ~ "LMA",
+  metadata_analysis$Clade %in% c("G03", "G04", "G05", "G07", "G09", "G15", "G16") ~ "LMA",
   TRUE ~ "Intermediate"
 )
 
