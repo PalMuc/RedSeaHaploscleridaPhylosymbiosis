@@ -65,3 +65,31 @@ print(phyloseq_object)
 saveRDS(phyloseq_object, "phyloseq_object.rds")
 ```
 
+### Quality control + filtering
+```python
+## Rarefaction curves
+rarecurve(as.data.frame(t(otu_table(phyloseq_object))), 
+          step = 100, col = "blue", label = FALSE,
+          main = "Rarefaction Curves")
+
+## Check read distribution
+print(summary(sample_sums(phyloseq_object)))
+
+hist(sample_sums(phyloseq_object), breaks = 30, col = "steelblue",
+     main = "Read counts per sample", 
+     xlab = "Number of reads")
+
+## Identify and remove low-quality samples
+low_threshold <- 5000
+low_samples <- names(sample_sums(phyloseq_object)[sample_sums(phyloseq_object) < low_threshold])
+print(low_samples)
+
+## Create filtered dataset
+phyloseq_filtered <- prune_samples(sample_sums(phyloseq_object) >= low_threshold, phyloseq_object)
+phyloseq_filtered <- prune_taxa(taxa_sums(phyloseq_filtered) > 0, phyloseq_filtered)
+
+print(phyloseq_filtered)
+print(summary(sample_sums(phyloseq_filtered)))
+```
+
+
