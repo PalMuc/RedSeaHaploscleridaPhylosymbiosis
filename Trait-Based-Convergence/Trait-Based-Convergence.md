@@ -382,6 +382,53 @@ write.csv(varpart_summary,
 print(varpart_summary)
 ```
 
+## Within vs. between group comparisons
+
+Are microbiomes from samples with the same trait type (HMA vs HMA or LMA vs LMA) more similar to each other, 
+than microbiomes from samples that have different trait types (HMA vs LMA)?
+
+### Calculate mean Bray-Curtis distances
+```python
+# Convert to long format
+micro_dist_long <- as.data.frame(as.matrix(micro_dist_all))
+micro_dist_long$Sample1 <- rownames(micro_dist_long)
+micro_dist_long <- pivot_longer(micro_dist_long, 
+                                cols = -Sample1, 
+                                names_to = "Sample2", 
+                                values_to = "Bray_Curtis")
+
+# Add trait info
+micro_dist_long$Trait1 <- metadata_all[micro_dist_long$Sample1, "Microbial_Type"]
+micro_dist_long$Trait2 <- metadata_all[micro_dist_long$Sample2, "Microbial_Type"]
+
+# Remove self-comparisons
+micro_dist_long <- micro_dist_long[micro_dist_long$Sample1 != micro_dist_long$Sample2, ]
+
+# Classify comparisons
+micro_dist_long$Comparison_Type <- case_when(
+  micro_dist_long$Trait1 == "HMA" & micro_dist_long$Trait2 == "HMA" ~ "Within HMA",
+  micro_dist_long$Trait1 == "LMA" & micro_dist_long$Trait2 == "LMA" ~ "Within LMA",
+  (micro_dist_long$Trait1 == "HMA" & micro_dist_long$Trait2 == "LMA") |
+    (micro_dist_long$Trait1 == "LMA" & micro_dist_long$Trait2 == "HMA") ~ "Between HMA-LMA",
+  TRUE ~ "Other"
+)
+
+# Calculate summaries
+comparison_summary <- micro_dist_long %>%
+  filter(Comparison_Type != "Other") %>%
+  group_by(Comparison_Type) %>%
+  summarise(
+    Mean_Distance = mean(Bray_Curtis, na.rm = TRUE),
+    SD_Distance = sd(Bray_Curtis, na.rm = TRUE),
+    Median_Distance = median(Bray_Curtis, na.rm = TRUE),
+    N = n()
+  )
+
+# Mean Bray-Curtis distances
+print(comparison_summary)
+```
+
+
 
 
 
