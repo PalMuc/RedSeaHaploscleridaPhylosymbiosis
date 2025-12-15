@@ -1,9 +1,12 @@
 # Bargraph Microbiome Red Sea Haplosclerida
 
+### Setup libraries
 ```python
 library(tidyverse)
 library(phyloseq)
 library(RColorBrewer)
+library(ape)
+library(ggplot2)
 ```
 Make sure the following datasets are loaded:
 1. asv_tab_noMt_noChloro (count table)
@@ -17,7 +20,7 @@ dim(red_sea_taxa.print_noMt_noChloro)  #ASVs x Taxonomy ranks
 dim(sample_info)  # Samples x metadata columns
 ```
 
-### Step 1: Create phyloseq object
+### Create phyloseq object
 ```python
 OTU <- otu_table(asv_tab_noMt_noChloro, taxa_are_rows = TRUE)
 TAX <- tax_table(as.matrix(red_sea_taxa.print_noMt_noChloro))
@@ -28,26 +31,26 @@ physeq <- phyloseq(OTU, TAX, samples)
 print(physeq)
 ```
 
-### Step 2: Aggregate to CLASS level (not Phylum)
+### Aggregate to CLASS level (not Phylum)
 This allows us to split Proteobacteria into Alpha/Gamma/etc.
 ```python
 physeq_class <- tax_glom(physeq, taxrank = "Class")
 print(paste("Number of Classes:", ntaxa(physeq_class)))
 ```
 
-### Step 3: Transform to relative abundance (%)
+### Transform to relative abundance (%)
 ```python
 physeq_class_rel <- transform_sample_counts(physeq_class, function(x) x/sum(x)*100)
 ```
 
-### Step 4: Melt to long format
+### Melt to long format
 ```python
 class_data <- psmelt(physeq_class_rel)
 print(paste("Dimensions of class_data:", paste(dim(class_data), collapse = " x ")))
 head(class_data)
 ```
 
-### Step 5: Check what we have for Proteobacteria
+### Check what we have for Proteobacteria
 ```python
 proteo_check <- class_data %>%
   filter(Phylum == "Proteobacteria") %>%
@@ -59,7 +62,7 @@ print("Proteobacteria Classes:")
 print(proteo_check)
 ```
 
-### Step 6: Create Phylum_plot column for visualization
+### Create Phylum_plot column for visualization
 ```python
 # This groups Classes into plottable categories
 class_data_plot <- class_data %>%
@@ -84,7 +87,7 @@ table(class_data_plot$Phylum_plot)
 
 ```
 
-### Step 7: Calculate mean abundance per group
+### Calculate mean abundance per group
 ```python
 plot_summary <- class_data_plot %>%
   group_by(Phylum_plot) %>%
@@ -95,7 +98,7 @@ print("Mean abundances for plotting:")
 print(plot_summary, n = 20)
 ```
 
-### Step 8: Check if we have Alpha + Gamma
+### Check if we have Alpha + Gamma
 ```python
 alpha_gamma_check <- class_data_plot %>%
   filter(Phylum_plot %in% c("Alphaproteobacteria", "Gammaproteobacteria")) %>%
@@ -111,7 +114,7 @@ print(alpha_gamma_check)
 ```
 
 
-### Step 9: Aggregate data per sample (sum over all Classes within each Phylum_plot category)
+### Aggregate data per sample (sum over all Classes within each Phylum_plot category)
 ```python
 plot_data <- class_data_plot %>%
   group_by(Sample, Phylum_plot, Clade) %>%
@@ -122,10 +125,9 @@ dim(plot_data)
 head(plot_data)
 ```
 
-### Step 10: Load phylogeny to get correct sample order
+### Load phylogeny to get correct sample order
 ```python
-library(ape)
-rooted_red_sea_phylo <- read.tree("./Data/Rooted_RAxML_RSHaplos_25.tre")
+rooted_red_sea_phylo <- read.tree("./Path/to/direcotory/Rooted_RAxML_RSHaplos_25.tre")
 
 # Get phylogenetic order of samples
 phylo_order <- rooted_red_sea_phylo$tip.label
@@ -137,7 +139,7 @@ plot_data$Sample <- factor(plot_data$Sample, levels = phylo_order)
 sum(is.na(plot_data$Sample))
 ```
 
-### Step 11: Define color palette
+### Define colour palette
 ```python
 phylum_colors <- c(
   "Alphaproteobacteria" = "#5E81AC",    # Blue grey
@@ -152,7 +154,7 @@ phylum_colors <- c(
 )
 ```
 
-### Step 12: Scale abundance to 0-1 range
+### Scale abundance to 0-1 range
 ```python
 plot_data_scaled <- plot_data %>%
   mutate(Abundance_scaled = Abundance / 100)  # Convert percentage to proportion
@@ -215,10 +217,8 @@ plot_data_filtered$Clade <- factor(plot_data_filtered$Clade,
                                    levels = clade_phylo_order)
 ```
 
-### Step 13: Create the bargraph
+### Create the bargraph
 ```python
-library(ggplot2)
-
 Barplot_RS <- ggplot(plot_data_filtered, 
             aes(x = Sample, y = Abundance_scaled, fill = Phylum_plot)) +
   geom_bar(stat = "identity", 
@@ -267,6 +267,7 @@ Barplot_RS <- ggplot(plot_data_filtered,
   )
 
 # Display
+
 print(Barplot_RS)
 ```
 
