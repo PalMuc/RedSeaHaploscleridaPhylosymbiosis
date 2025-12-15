@@ -33,14 +33,14 @@ setwd("C:/Path/to/R-Phylosymbiosis/")
 
 ### Prepare all the data
 ```python
-## Load DADA2 outputs
+# Load DADA2 outputs
 asv_counts <- read.table("ASVs_Counts_noMt_noChloro.tsv", 
                          sep="\t", header=TRUE, row.names=1)
 
 asv_taxonomy <- read.table("ASVs_Taxonomy_noMt_noChloro.tsv", 
                            sep="\t", header=TRUE, row.names=1)
 
-## Load metadata
+# Load metadata
 sample_metadata <- read.csv("Sample_Information.csv", sep=";")
 rownames(sample_metadata) <- sample_metadata$Sample
 head(sample_metadata)
@@ -48,10 +48,10 @@ rownames(sample_metadata)[1:10]
 all(colnames(asv_counts) %in% rownames(sample_metadata))
 all(rownames(sample_metadata) %in% colnames(asv_counts))
 
-## Load phylogenetic tree
+# Load phylogenetic tree
 asv_tree <- read.tree("ASV_tree_GTR.nwk")
 
-## Create phyloseq object
+# Create phyloseq object
 phyloseq_object <- phyloseq(
   otu_table(asv_counts, taxa_are_rows=TRUE),
   tax_table(as.matrix(asv_taxonomy)),
@@ -67,7 +67,7 @@ saveRDS(phyloseq_object, "phyloseq_object.rds")
 
 ### Quality control + filtering
 ```python
-## Rarefaction curves
+# Rarefaction curves
 rarecurve(as.data.frame(t(otu_table(phyloseq_object))), 
           step = 100, col = "blue", label = FALSE,
           main = "Rarefaction Curves")
@@ -84,7 +84,7 @@ low_threshold <- 5000
 low_samples <- names(sample_sums(phyloseq_object)[sample_sums(phyloseq_object) < low_threshold])
 print(low_samples)
 
-## Create filtered dataset
+# Create filtered dataset
 phyloseq_filtered <- prune_samples(sample_sums(phyloseq_object) >= low_threshold, phyloseq_object)
 phyloseq_filtered <- prune_taxa(taxa_sums(phyloseq_filtered) > 0, phyloseq_filtered)
 
@@ -94,23 +94,38 @@ print(summary(sample_sums(phyloseq_filtered)))
 
 ### Create data subsets
 ```python
-## Rarefied dataset (for alpha diversity)
+# Rarefied dataset (for alpha diversity)
 phyloseq_rarefied <- rarefy_even_depth(phyloseq_filtered, rngseed = 123)
 print(phyloseq_rarefied)
 
-## Compositional dataset (for beta diversity)
+# Compositional dataset (for beta diversity)
 phyloseq_compositional <- microbiome::transform(phyloseq_filtered, "compositional")
 print(phyloseq_compositional)
 
-## Remove samples without clade assignment (for phylosymbiosis)
+# Remove samples without clade assignment (for phylosymbiosis)
 phyloseq_clades <- subset_samples(phyloseq_filtered, !is.na(Clade))
 
-## Merge by clade
+# Merge by clade
 phyloseq_merged <- merge_samples(phyloseq_clades, "Clade")
 
 # Fix sample_data
 sample_data(phyloseq_merged)$Clade <- sample_names(phyloseq_merged)
 print(phyloseq_merged)
+```
+
+### Taxonomic summary
+```python
+# Phylum-level aggregation
+phyloseq_phylum <- tax_glom(phyloseq_filtered, "Phylum")
+phylum_abundance <- sort(colSums(t(otu_table(phyloseq_phylum))), decreasing = TRUE)
+print(head(phylum_abundance, 15))
+
+# Create taxonomy dataframe with abundance
+tax_data <- data.frame(
+  as(tax_table(phyloseq_filtered), "matrix"),
+  Abundance = taxa_sums(phyloseq_filtered),
+  ASV = taxa_names(phyloseq_filtered)
+)
 ```
 
 
