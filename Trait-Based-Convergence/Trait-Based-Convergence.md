@@ -351,7 +351,7 @@ full_model <- adonis2(micro_dist_vp ~ Microbial_Type +
                       data = metadata_vp_extended, permutations = 999)
 ```
 
-###Extract R² values properly
+### Extract R² values properly
 ```python
 # The "Model" row already contains the TOTAL R² for all terms
 R2_trait_only <- trait_only$R2[1]  # Row 1 = Model (already total)
