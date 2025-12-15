@@ -428,6 +428,40 @@ comparison_summary <- micro_dist_long %>%
 print(comparison_summary)
 ```
 
+## Kruskal-Wallis + Post-hoc Dunn Tests
+
+Are the means of these groups significantly different, or is this a difference by coincidence?
+(Non-parametric equivalent of a one-way ANOVA) Bray-Curtis values are not normally distributed 
+Hence, Kruskal-Wallis test is a better option.
+
+```python
+kruskal_result <- kruskal.test(Bray_Curtis ~ Comparison_Type, 
+                               data = filter(micro_dist_long, Comparison_Type != "Other"))
+                               
+cat("\nKruskal-Wallis test:\n")
+cat("  Chi-squared =", round(kruskal_result$statistic, 3), "\n")
+cat("  df =", kruskal_result$parameter, "\n")
+cat("  p-value =", format.pval(kruskal_result$p.value, digits = 3), "\n\n")
+```
+
+Kruskal-Wallis test tells us that there is a difference, but not where.
+For this, a Post-hoc Dunn test is necessary!
+
+```python
+if(kruskal_result$p.value < 0.05) {
+  library(FSA)
+  dunn_result <- dunnTest(Bray_Curtis ~ Comparison_Type,
+                          data = filter(micro_dist_long, Comparison_Type != "Other"),
+                          method = "bonferroni")
+  cat("Post-hoc Dunn test (Bonferroni correction):\n")
+  print(dunn_result$res)
+}
+```
+
+
+                               
+                               
+
 
 
 
