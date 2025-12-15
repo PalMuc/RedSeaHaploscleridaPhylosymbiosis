@@ -233,9 +233,9 @@ combined_with_legends <- plot_grid(
   rel_heights = c(1, 0.1)
 )
 
-ggsave("RedSea_Maps_Combined_Horizontal.pdf", combined_with_legends, 
+ggsave("RedSea_Maps_Combined.pdf", combined_with_legends, 
        width = 18, height = 8)
-ggsave("RedSea_Maps_Combined_Horizontal.svg", combined_with_legends, 
+ggsave("RedSea_Maps_Combined.svg", combined_with_legends, 
        width = 18, height = 8, dpi = 300)
 ```
 
