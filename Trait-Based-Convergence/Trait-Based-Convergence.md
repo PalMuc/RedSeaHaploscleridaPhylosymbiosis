@@ -351,6 +351,38 @@ full_model <- adonis2(micro_dist_vp ~ Microbial_Type +
                       data = metadata_vp_extended, permutations = 999)
 ```
 
+###Extract R² values properly
+```python
+# The "Model" row already contains the TOTAL R² for all terms
+R2_trait_only <- trait_only$R2[1]  # Row 1 = Model (already total)
+R2_phylo_only <- phylo_only$R2[1]  # Row 1 = Model (already total for all 3 PCs!)
+R2_geo_only <- geo_only$R2[1]      # Row 1 = Model (already total for all 3 PCs!)
+R2_full <- full_model$R2[1]        # Row 1 = Model (already total for all 7 terms!)
+
+# Overlap estimate
+overlap_estimate <- (R2_trait_only + R2_phylo_only + R2_geo_only) - R2_full
+
+# Save variance partitioning results
+varpart_summary <- data.frame(
+  Factor = c("Trait (HMA/LMA)", "Phylogeny (3 PCs)", "Geography (3 PCs)", 
+             "Full model", "Shared/Overlap", "Unexplained"),
+  R_squared = c(R2_trait_only, R2_phylo_only, R2_geo_only, 
+                R2_full, overlap_estimate, 1 - R2_full),
+  Percentage = round(c(R2_trait_only, R2_phylo_only, R2_geo_only, 
+                       R2_full, overlap_estimate, 1 - R2_full) * 100, 2)
+)
+
+
+write.csv(varpart_summary,
+          "Phylosymbiosis_results/variance_partitioning_summary.csv",
+          row.names = FALSE)
+
+
+# Variance Partitioning Summary
+print(varpart_summary)
+```
+
+
 
 
 
