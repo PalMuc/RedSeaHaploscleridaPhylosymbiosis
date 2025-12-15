@@ -382,4 +382,64 @@ dist_matrix_uunifrac_match <- dist_matrix_uunifrac[samples_in_both, samples_in_b
 phylo_dist_matrix_match <- phylo_dist_matrix[samples_in_both, samples_in_both]
 ```
 
+### Mantel tests
+```python
+# Mantel test 1: Bray-Curtis vs Host Phylogeny
+mantel_bray <- mantel(dist_matrix_bray_match, 
+                      phylo_dist_matrix_match, 
+                      method = "spearman", 
+                      permutations = 9999, 
+                      na.rm = TRUE)
+
+# Mantel test 2: Weighted UniFrac vs Host Phylogeny
+mantel_wunifrac <- mantel(dist_matrix_wunifrac_match, 
+                          phylo_dist_matrix_match, 
+                          method = "spearman", 
+                          permutations = 9999, 
+                          na.rm = TRUE)
+
+# Mantel test 3: Unweighted UniFrac vs Host Phylogeny
+mantel_uunifrac <- mantel(dist_matrix_uunifrac_match, 
+                          phylo_dist_matrix_match, 
+                          method = "spearman", 
+                          permutations = 9999, 
+                          na.rm = TRUE)
+
+# Create summary table
+mantel_results <- data.frame(
+  Distance_Method = c("Bray-Curtis", "Weighted UniFrac", "Unweighted UniFrac"),
+  Mantel_r = c(mantel_bray$statistic, mantel_wunifrac$statistic, mantel_uunifrac$statistic),
+  p_value = c(mantel_bray$signif, mantel_wunifrac$signif, mantel_uunifrac$signif),
+  Significance = c(
+    ifelse(mantel_bray$signif < 0.001, "***", 
+           ifelse(mantel_bray$signif < 0.01, "**",
+                  ifelse(mantel_bray$signif < 0.05, "*", "ns"))),
+    ifelse(mantel_wunifrac$signif < 0.001, "***",
+           ifelse(mantel_wunifrac$signif < 0.01, "**",
+                  ifelse(mantel_wunifrac$signif < 0.05, "*", "ns"))),
+    ifelse(mantel_uunifrac$signif < 0.001, "***",
+           ifelse(mantel_uunifrac$signif < 0.01, "**",
+                  ifelse(mantel_uunifrac$signif < 0.05, "*", "ns")))
+  )
+)
+
+print(mantel_results)
+
+# Save results
+write.csv(mantel_results, 
+          "Phylosymbiosis_results/mantel_test_results.csv", 
+          row.names = FALSE)
+
+# Save matched distance matrices
+write.csv(dist_matrix_bray_match, 
+          "Phylosymbiosis_results/distance_matrix_bray_matched.csv")
+write.csv(dist_matrix_wunifrac_match, 
+          "Phylosymbiosis_results/distance_matrix_wunifrac_matched.csv")
+write.csv(dist_matrix_uunifrac_match, 
+          "Phylosymbiosis_results/distance_matrix_uunifrac_matched.csv")
+write.csv(phylo_dist_matrix_match,
+          "Phylosymbiosis_results/phylo_distance_matrix_matched.csv")
+```
+
+
 
