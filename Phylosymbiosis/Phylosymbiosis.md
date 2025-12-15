@@ -170,5 +170,49 @@ phyloseq_plot3 <- ggplot(sample_data_plot, aes(x = Clade, y = Reads, fill = Clad
 print(phyloseq_plot3)
 ```
 
+### Colour palettes
+```python
+colour_clades <- c(
+  "G01" = "blue3", "G02" = "cadetblue", "G03" = "chocolate4",
+  "G04" = "purple3", "G05" = "darkolivegreen", "G06" = "greenyellow",
+  "G07" = "cornflowerblue", "G08" = "plum", "G09" = "darkorange1",
+  "G10" = "magenta", "G11" = "gold1", "G12" = "cyan",
+  "G13" = "bisque2", "G14" = "seagreen1", "G15" = "midnightblue",
+  "G16" = "lightcyan3", "G17" = "firebrick2", "G18" = "tan1",
+  "G19" = "darkseagreen", "G20" = "maroon2", "G21" = "black",
+  "G22" = "red4"
+)
+
+# Generate Order-level colors
+tax_data$Order_clean <- ifelse(is.na(tax_data$Order) | tax_data$Order == "NA",
+                               "Unclassified", tax_data$Order)
+
+tax_data$Full_Order <- paste(
+  ifelse(is.na(tax_data$Kingdom), "Unknown", tax_data$Kingdom),
+  ifelse(is.na(tax_data$Phylum), "Unclassified", tax_data$Phylum),
+  ifelse(is.na(tax_data$Class), "Unclassified", tax_data$Class),
+  tax_data$Order_clean,
+  sep = " | "
+)
+
+unique_orders <- unique(tax_data$Full_Order)
+n_orders <- length(unique_orders)
+
+# Generate colors
+if(n_orders <= 74) {
+  qual_col_pals <- brewer.pal.info[brewer.pal.info$category == 'qual',]
+  col_vector <- unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+  colour_orders <- setNames(col_vector[1:n_orders], unique_orders)
+} else {
+  colour_orders <- setNames(rainbow(n_orders), unique_orders)
+}
+
+colour_orders <- c(colour_orders, "Other" = "grey80")
+
+# Export
+write.csv(data.frame(Order = names(colour_orders), Colour = colour_orders),
+          "colour_orders.csv", row.names = FALSE)
+```
+
 
 
