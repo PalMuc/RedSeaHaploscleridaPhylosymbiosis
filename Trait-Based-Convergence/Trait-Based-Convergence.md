@@ -216,6 +216,47 @@ write.csv(trait_dist_matrix,
           "Phylosymbiosis_results/trait_distance_matrix.csv")
 ```
 
+### Mantel test: Trait vs Microbiome
+```python
+mantel_trait <- mantel(
+  as.dist(micro_dist_all),
+  as.dist(trait_dist_matrix),
+  method = "spearman",
+  permutations = 9999
+)
+
+cat("Trait (HMA/LMA) vs Microbiome:\n")
+cat("  Mantel r =", round(mantel_trait$statistic, 4), "\n")
+cat("  p-value =", mantel_trait$signif, "\n")
+if(mantel_trait$signif < 0.001) cat("  ***\n\n")
+
+
+# Compare: Trait vs Phylogeny as predictors
+cat("COMPARISON: Which is a better predictor of microbiome dissimilarity?\n")
+cat("  Trait similarity:        r =", round(mantel_trait$statistic, 4), "\n")
+cat("  Phylogenetic distance:   r =", round(partial_mantel_phylo$statistic, 4), 
+    "(controlling for geography)\n")
+cat("  Raw phylogenetic:        r =", round(mantel_bray$statistic, 4), "\n\n")
+
+
+# Save comparison
+trait_vs_phylo <- data.frame(
+  Predictor = c("Trait (HMA/LMA)", 
+                "Phylogeny (raw)", 
+                "Phylogeny (controlling for geography)"),
+  Mantel_r = c(mantel_trait$statistic, 
+               mantel_bray$statistic, 
+               partial_mantel_phylo$statistic),
+  p_value = c(mantel_trait$signif, 
+              mantel_bray$signif, 
+              partial_mantel_phylo$signif)
+)
+
+write.csv(trait_vs_phylo,
+          "Phylosymbiosis_results/trait_vs_phylogeny_comparison.csv",
+          row.names = FALSE)
+```
+
 
 
 
