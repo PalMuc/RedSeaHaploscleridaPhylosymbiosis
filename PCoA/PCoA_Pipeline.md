@@ -152,6 +152,21 @@ ggsave("Beta_diversity_results/PCoA_centroids.pdf", plot_pcoa_centroids,
        width = 10, height = 8)
 ```
 
+### Dispersion test
+```python
+# Test for dispersion among clades
+betadisp_result <- betadisper(dist_bray, metadata_clean$Clade)
+betadisp_perm <- permutest(betadisp_result, permutations = 999)
+
+print(betadisp_perm)
+
+# Visualise
+boxplot(betadisp_result, main = "Distance to centroid by Clade",
+        xlab = "Clade", ylab = "Distance to centroid")
+
+# Plot dispersion
+plot(betadisp_result, main = "PCoA of Dispersion")
+```
 
 
 
