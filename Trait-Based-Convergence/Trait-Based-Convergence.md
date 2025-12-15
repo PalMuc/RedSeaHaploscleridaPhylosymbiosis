@@ -131,7 +131,7 @@ metadata_all <- metadata_analysis[samples_all_data, ]
 
 ### Testing phylogeny vs geography effects on microbiome
 ```python
-# Test 1: What is the effect of phylogeny on the microbiome, when geography is excluded
+# Test 1: What is the effect of phylogeny on the microbiome, controlling for geography
 partial_mantel_phylo <- mantel.partial(
   as.dist(micro_dist_all),
   as.dist(phylo_dist_all),
@@ -145,7 +145,8 @@ cat("  Mantel r =", round(partial_mantel_phylo$statistic, 4), "\n")
 cat("  p-value =", partial_mantel_phylo$signif, "\n")
 if(partial_mantel_phylo$signif < 0.001) cat("  ***\n")
 
-# Test 2: What is the effect of geography on the microbiome, when phylogeny is exlcuded
+
+# Test 2: What is the effect of geography on the microbiome, controlling for phylogeny
 partial_mantel_geo <- mantel.partial(
   as.dist(micro_dist_all),
   as.dist(geo_dist_all),
