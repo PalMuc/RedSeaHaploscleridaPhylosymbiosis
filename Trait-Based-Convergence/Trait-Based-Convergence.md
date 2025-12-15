@@ -431,7 +431,7 @@ print(comparison_summary)
 ## Kruskal-Wallis + Post-hoc Dunn Tests
 
 Are the means of these groups significantly different, or is this a difference by coincidence?
-(Non-parametric equivalent of a one-way ANOVA) Bray-Curtis values are not normally distributed 
+(Non-parametric equivalent of a one-way ANOVA) Bray-Curtis values are not normally distributed in my case > 
 Hence, Kruskal-Wallis test is a better option.
 
 ```python
