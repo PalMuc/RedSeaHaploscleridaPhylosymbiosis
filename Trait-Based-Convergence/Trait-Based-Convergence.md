@@ -1,6 +1,6 @@
-# R-Script for Trait-Based vs. Phylogenetic Filtering Prokaryotes in Sponges
+# R-Script for Trait-Based vs. Phylogenetic Filtering 
 
-Before starting with this script, please check the DADA2 + Phylosymbiosis pipelines in advance.
+Before starting with this script, please check the DADA2 + Phylosymbiosis + PCoA pipelines in advance.
 
 
 ### Setup libraries
