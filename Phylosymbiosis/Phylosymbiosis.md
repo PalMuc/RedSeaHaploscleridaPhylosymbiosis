@@ -225,10 +225,7 @@ nmds_bray <- ordinate(phyloseq_compositional, "NMDS", "bray", trymax = 100)
 # Save NMDS results
 write.csv(nmds_bray$points, "Beta_diversity_results/nmds_bray_points.csv")
 saveRDS(nmds_bray, "Beta_diversity_results/nmds_bray.RDS")
-```
 
-Plot NMDS
-```python
 # Extract ordination data
 nmds_data <- plot_ordination(phyloseq_compositional, nmds_bray, 
                              type = "Samples", justDF = TRUE)
