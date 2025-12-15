@@ -1,18 +1,18 @@
-# Genome-wide exon capture uncovers host-microbiome co-diversification in Red Sea Sponges
+# Trait-based convergence, not phylosymbiosis, structures microbiome assembly in marine sponges
 
-Joëlle van der Sprong <sup>1,§</sup>; Vani Tirumalasetty <sup>1</sup>; Simone Schätzle <sup>1</sup>; Oliver Voigt <sup>1</sup>; Dirk Erpenbeck <sup>1,2</sup>; Gert Wörheide <sup>1,2,3</sup>; Sergio Vargas <sup>1,§</sup>
+Jo?lle van der Sprong <sup>1,?</sup>; Vani Tirumalasetty <sup>1</sup>; Simone Sch?tzle <sup>1</sup>; Oliver Voigt <sup>1</sup>; Dirk Erpenbeck <sup>1,2</sup>; Gert W?rheide <sup>1,2,3</sup>; Sergio Vargas <sup>1,?</sup>
 
 ----------
 
-<sup>1</sup> Department of Earth and Environmental Sciences, Palaeontology and Geobiology, Ludwig-Maximilians-Universität München, Munich, Germany
+<sup>1</sup> Department of Earth and Environmental Sciences, Palaeontology and Geobiology, Ludwig-Maximilians-Universit?t M?nchen, Munich, Germany
 
-<sup>2</sup> GeoBio-Center, Ludwig-Maximilians-Universität München, Munich, Germany
+<sup>2</sup> GeoBio-Center, Ludwig-Maximilians-Universit?t M?nchen, Munich, Germany
 
 <sup>3</sup> Bavarian State Collections of Palaeontology and Geology, Munich, Germany
 
 
 
-<sup>§</sup> corresponding authors: j.vandersprong@uni-goettingen.de & s.vargas@lmu.de
+<sup>?</sup> corresponding authors: j.vandersprong@uni-goettingen.de & s.vargas@lmu.de
 
 ----------
 
