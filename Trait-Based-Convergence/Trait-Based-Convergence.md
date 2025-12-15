@@ -140,11 +140,6 @@ partial_mantel_phylo <- mantel.partial(
   permutations = 9999
 )
 
-cat("Phylogeny | Geography (controlling for geography):\n")
-cat("  Mantel r =", round(partial_mantel_phylo$statistic, 4), "\n")
-cat("  p-value =", partial_mantel_phylo$signif, "\n")
-if(partial_mantel_phylo$signif < 0.001) cat("  ***\n")
-
 
 # Test 2: What is the effect of geography on the microbiome, controlling for phylogeny
 partial_mantel_geo <- mantel.partial(
@@ -155,11 +150,45 @@ partial_mantel_geo <- mantel.partial(
   permutations = 9999
 )
 
-cat("\nGeography | Phylogeny (controlling for phylogeny):\n")
-cat("  Mantel r =", round(partial_mantel_geo$statistic, 4), "\n")
-cat("  p-value =", partial_mantel_geo$signif, "\n")
-if(partial_mantel_geo$signif < 0.001) cat("  ***\n")
+
+# Test 3: Simple Mantel for Geography (for comparison)
+# Is there a correlation between geography and the microbiome?
+simple_mantel_geo <- mantel(
+  as.dist(micro_dist_all),
+  as.dist(geo_dist_all),
+  method = "spearman",
+  permutations = 9999
+)
+
+# Save results
+partial_mantel_results <- data.frame(
+  Test = c("Phylogeny | Geography", 
+           "Geography | Phylogeny",
+           "Geography (simple)",
+           "Phylogeny (simple, from earlier)"),
+  Mantel_r = c(partial_mantel_phylo$statistic,
+               partial_mantel_geo$statistic,
+               simple_mantel_geo$statistic,
+               mantel_bray$statistic),
+  p_value = c(partial_mantel_phylo$signif,
+              partial_mantel_geo$signif,
+              simple_mantel_geo$signif,
+              mantel_bray$signif),
+  Interpretation = c(
+    "Phylogenetic effect after removing geography",
+    "Geographic effect after removing phylogeny",
+    "Raw geographic effect",
+    "Raw phylogenetic effect"
+  )
+)
+
+write.csv(partial_mantel_results,
+          "Phylosymbiosis_results/partial_mantel_results.csv",
+          row.names = FALSE)
+
+print(partial_mantel_results[, 1:3])
 ```
+
 
 
 
