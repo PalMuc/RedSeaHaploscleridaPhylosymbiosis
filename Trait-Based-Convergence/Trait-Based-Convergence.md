@@ -301,6 +301,55 @@ write.csv(as.data.frame(permanova_clade_HMA_LMA),
           "Phylosymbiosis_results/permanova_clade_within_HMA_LMA.csv")
 ```
 
+## Variance Partitioning Analysis
+
+How many of the microbiome variation can be explained by traits, phylogeny and geography?
+How much overlap is there between these variables?
+
+### Partitioning microbiome variance among Trait, Phylogeny, and Geography
+```python
+# Use samples that have all data and are HMA or LMA
+samples_varpart <- intersect(samples_all_data, samples_HMA_LMA)
+
+# Subset matrices
+micro_dist_vp <- micro_dist_all[samples_varpart, samples_varpart]
+phylo_dist_vp <- phylo_dist_all[samples_varpart, samples_varpart]
+geo_dist_vp <- geo_dist_all[samples_varpart, samples_varpart]
+trait_dist_vp <- trait_dist_matrix[samples_varpart, samples_varpart]
+
+# Convert to dist objects
+micro_dist_vp <- as.dist(micro_dist_vp)
+
+# Get metadata for these samples
+metadata_vp <- metadata_all[samples_varpart, ]
+
+# Use PCoA coordinates for continuous predictors
+phylo_pcoa <- cmdscale(phylo_dist_vp, k = 3)
+colnames(phylo_pcoa) <- paste0("Phylo_PC", 1:3)
+
+geo_pcoa <- cmdscale(geo_dist_vp, k = 3)
+colnames(geo_pcoa) <- paste0("Geo_PC", 1:3)
+
+# Combine with metadata
+metadata_vp_extended <- cbind(metadata_vp, phylo_pcoa, geo_pcoa)
+
+# Sequential R² PERMANOVA for variance partitioning
+# Pure effects (single factor models)
+trait_only <- adonis2(micro_dist_vp ~ Microbial_Type, 
+                      data = metadata_vp_extended, permutations = 999)
+
+phylo_only <- adonis2(micro_dist_vp ~ Phylo_PC1 + Phylo_PC2 + Phylo_PC3,
+                      data = metadata_vp_extended, permutations = 999)
+
+geo_only <- adonis2(micro_dist_vp ~ Geo_PC1 + Geo_PC2 + Geo_PC3,
+                    data = metadata_vp_extended, permutations = 999)
+
+# Full model
+full_model <- adonis2(micro_dist_vp ~ Microbial_Type + 
+                        Phylo_PC1 + Phylo_PC2 + Phylo_PC3 + 
+                        Geo_PC1 + Geo_PC2 + Geo_PC3,
+                      data = metadata_vp_extended, permutations = 999)
+```
 
 
 
