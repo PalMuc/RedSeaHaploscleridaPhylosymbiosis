@@ -128,4 +128,47 @@ tax_data <- data.frame(
 )
 ```
 
+### Exploratory plots
+```python
+# ASV abundance distribution
+phyloseq_plot1 <- ggplot(tax_data, aes(Abundance)) +
+  geom_histogram(bins = 50, fill = "steelblue", alpha = 0.8) +
+  scale_x_log10(labels = scales::comma) +
+  labs(title = "ASV Abundance Distribution",
+       x = "Abundance (log10 scale)",
+       y = "Number of ASVs") +
+  theme_bw(base_size = 12)
+
+print(phyloseq_plot1)
+
+# Sample read distribution
+sample_data_plot <- data.frame(
+  Sample = sample_names(phyloseq_filtered),
+  Reads = sample_sums(phyloseq_filtered),
+  Clade = sample_data(phyloseq_filtered)$Clade
+)
+
+phyloseq_plot2 <- ggplot(sample_data_plot, aes(Reads)) +
+  geom_histogram(bins = 30, fill = "coral", alpha = 0.8) +
+  labs(title = "Read Distribution per Sample",
+       x = "Number of reads",
+       y = "Number of samples") +
+  theme_bw(base_size = 12)
+
+print(phyloseq_plot2)
+
+# Reads per clade (boxplot)
+phyloseq_plot3 <- ggplot(sample_data_plot, aes(x = Clade, y = Reads, fill = Clade)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "Read Distribution by Clade",
+       x = "Clade",
+       y = "Number of reads") +
+  theme_bw(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+
+print(phyloseq_plot3)
+```
+
+
 
