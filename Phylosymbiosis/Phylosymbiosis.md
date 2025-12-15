@@ -92,4 +92,25 @@ print(phyloseq_filtered)
 print(summary(sample_sums(phyloseq_filtered)))
 ```
 
+### Create data subsets
+```python
+## Rarefied dataset (for alpha diversity)
+phyloseq_rarefied <- rarefy_even_depth(phyloseq_filtered, rngseed = 123)
+print(phyloseq_rarefied)
+
+## Compositional dataset (for beta diversity)
+phyloseq_compositional <- microbiome::transform(phyloseq_filtered, "compositional")
+print(phyloseq_compositional)
+
+## Remove samples without clade assignment (for phylosymbiosis)
+phyloseq_clades <- subset_samples(phyloseq_filtered, !is.na(Clade))
+
+## Merge by clade
+phyloseq_merged <- merge_samples(phyloseq_clades, "Clade")
+
+# Fix sample_data
+sample_data(phyloseq_merged)$Clade <- sample_names(phyloseq_merged)
+print(phyloseq_merged)
+```
+
 
