@@ -319,6 +319,9 @@ write.csv(as.data.frame(pairwise_result),
 
 ### Data preparation
 ```python
+# Create output directory
+dir.create("Phylosymbiosis_results", showWarnings = FALSE)
+
 # Generate microbiome distance matrices
 
 # Use phyloseq_clades (samples with clade info only)
