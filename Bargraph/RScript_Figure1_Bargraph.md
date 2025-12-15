@@ -1,5 +1,7 @@
 # Bargraph Microbiome Red Sea Haplosclerida
 
+Before starting with this pipeline, make sure to have checked the DADA2 pipeline first!
+
 ### Setup libraries
 ```python
 library(tidyverse)
