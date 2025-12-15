@@ -214,5 +214,61 @@ write.csv(data.frame(Order = names(colour_orders), Colour = colour_orders),
           "colour_orders.csv", row.names = FALSE)
 ```
 
+### Beta-diversity analysis - NMDS plots
+```python
+# Create output directory
+dir.create("Beta_diversity_results", showWarnings = FALSE)
+
+# Calculate NMDS
+nmds_bray <- ordinate(phyloseq_compositional, "NMDS", "bray", trymax = 100)
+
+# Save NMDS results
+write.csv(nmds_bray$points, "Beta_diversity_results/nmds_bray_points.csv")
+saveRDS(nmds_bray, "Beta_diversity_results/nmds_bray.RDS")
+```
+
+Plot NMDS
+```python
+# Extract ordination data
+nmds_data <- plot_ordination(phyloseq_compositional, nmds_bray, 
+                             type = "Samples", justDF = TRUE)
+
+# NMDS plot
+plot_nmds <- ggplot(nmds_data, aes(x = NMDS1, y = NMDS2)) +
+  geom_point(aes(fill = Clade), pch = 21, size = 4, alpha = 0.8) +
+  scale_fill_manual(values = colour_clades) +
+  annotate("text", 
+           label = paste0("2D Stress = ", round(nmds_bray$stress, 3)), 
+           x = min(nmds_data$NMDS1) + 0.1, 
+           y = max(nmds_data$NMDS2) - 0.1,
+           size = 5) +
+  labs(title = "NMDS based on Bray-Curtis distances",
+       fill = "Clade") +
+  guides(fill = guide_legend(override.aes = list(size = 7), ncol = 1)) +
+  theme_bw(base_size = 14) +
+  theme(
+    plot.title = element_text(size = 18, face = "bold"),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 14),
+    legend.title = element_text(size = 16, face = "bold"),
+    legend.text = element_text(size = 12)
+  )
+
+print(plot_nmds)
+
+# Save plot
+ggsave(filename = "Plot_NMDS_bray.pdf",
+       plot = plot_nmds, 
+       device = "pdf", 
+       width = 30, height = 20, units = "cm", 
+       path = "Beta_diversity_results")
+
+ggsave(filename = "Plot_NMDS_bray.png",
+       plot = plot_nmds, 
+       device = "png", 
+       width = 30, height = 20, units = "cm", dpi = 300,
+       path = "Beta_diversity_results")
+```
+
 
 
