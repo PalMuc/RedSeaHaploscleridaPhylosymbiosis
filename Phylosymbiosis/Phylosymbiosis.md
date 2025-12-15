@@ -319,6 +319,67 @@ write.csv(as.data.frame(pairwise_result),
 
 ### Data preparation
 ```python
-``
+# Generate microbiome distance matrices
+
+# Use phyloseq_clades (samples with clade info only)
+# Bray-Curtis dissimilarity
+dist_matrix_bray <- as.matrix(distance(phyloseq_compositional, method = "bray"))
+
+# Weighted UniFrac (phylogenetic + abundance)
+dist_matrix_wunifrac <- as.matrix(distance(phyloseq_compositional, method = "wunifrac"))
+
+# Unweighted UniFrac (phylogenetic, presence/absence)
+dist_matrix_uunifrac <- as.matrix(distance(phyloseq_compositional, method = "uunifrac"))
+
+
+# Load host phylogenetic tree and calculate distances
+
+# Load host phylogenetic tree
+host_tree <- read.tree("C:/Path/to/directory/Rooted_RAxML_RSHaplos_25.tre")
+print(head(host_tree$tip.label, 10))
+
+# Calculate cophenetic distance (patristic distance between tips)
+phylo_dist_matrix <- cophenetic(host_tree)
+
+# Save the distance matrix for future use
+write.csv(phylo_dist_matrix, 
+          "Phylosymbiosis_results/host_phylogenetic_distance_matrix.csv")
+
+
+# Match sample names between matrices
+
+# Get sample names
+micro_samples <- rownames(dist_matrix_bray)
+phylo_samples <- rownames(phylo_dist_matrix)
+
+# Find overlapping samples
+samples_in_both <- intersect(micro_samples, phylo_samples)
+
+# Check for mismatches
+missing_from_phylo <- setdiff(micro_samples, phylo_samples)
+missing_from_micro <- setdiff(phylo_samples, micro_samples)
+
+if(length(missing_from_phylo) > 0) {
+  cat("\nWARNING: Samples in microbiome but not in phylogeny:\n")
+  print(missing_from_phylo)
+}
+
+if(length(missing_from_micro) > 0) {
+  cat("\nWARNING: Samples in phylogeny but not in microbiome:\n")
+  print(missing_from_micro)
+}
+
+# Subset matrices to matching samples only
+if(length(samples_in_both) < 10) {
+  stop("ERROR: Too few matching samples (", length(samples_in_both), 
+       "). Check matches between microbiome and phylogeny")
+}
+
+# Subset all matrices to matching samples
+dist_matrix_bray_match <- dist_matrix_bray[samples_in_both, samples_in_both]
+dist_matrix_wunifrac_match <- dist_matrix_wunifrac[samples_in_both, samples_in_both]
+dist_matrix_uunifrac_match <- dist_matrix_uunifrac[samples_in_both, samples_in_both]
+phylo_dist_matrix_match <- phylo_dist_matrix[samples_in_both, samples_in_both]
+```
 
 
