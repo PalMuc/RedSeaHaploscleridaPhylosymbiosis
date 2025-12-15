@@ -267,5 +267,51 @@ ggsave(filename = "Plot_NMDS_bray.png",
        path = "Beta_diversity_results")
 ```
 
+### Beta-diversity - PERMANOVA
+```python
+# Get metadata and remove NAs
+metadata <- as(sample_data(phyloseq_compositional), "data.frame")
+metadata_clean <- metadata[!is.na(metadata$Clade), ]
+
+# Calculate Bray-Curtis distance
+samples_with_clades <- rownames(metadata_clean)
+phyloseq_comp_clades <- prune_samples(samples_with_clades, phyloseq_compositional)
+dist_bray <- distance(phyloseq_comp_clades, method = "bray")
+
+# PERMANOVA test
+permanova_result <- adonis2(dist_bray ~ Clade, 
+                            data = metadata_clean, 
+                            by = NULL,
+                            permutations = 999)
+print(permanova_result)
+
+# Table
+datatable(permanova_result)
+
+# Save results
+write.csv(as.data.frame(permanova_result), 
+          "Beta_diversity_results/permanova_result_clade.csv")
+```
+
+
+### Beta-diversity - Pairwise PERMANOVA (post-hoc test)
+```python
+# Pairwise comparisons between clades
+pairwise_result <- pairwise.adonis(
+  dist_bray, 
+  metadata_clean$Clade,
+  p.adjust.m = "BH",
+  perm = 999
+)
+print(head(pairwise_result, 22))
+
+# Interactive table
+datatable(pairwise_result)
+
+# Save results
+write.csv(as.data.frame(pairwise_result), 
+          "Beta_diversity_results/pairwise_permanova_clade.csv")
+```
+
 
 
