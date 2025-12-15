@@ -102,4 +102,31 @@ write.csv(geo_dist_matrix,
           "Phylosymbiosis_results/geographic_distance_matrix_km.csv")
 ```
 
+### Match all matrices (i.e., phylogeny, microbiome, geography)
+```python
+# Find samples present in all three datasets
+samples_with_phylo <- rownames(phylo_dist_matrix)
+samples_with_micro <- rownames(dist_matrix_bray)
+samples_with_geo <- rownames(geo_dist_matrix)
+
+# Intersection
+samples_all_data <- Reduce(intersect, list(samples_with_phylo, 
+                                           samples_with_micro, 
+                                           samples_with_geo))
+
+if(length(samples_all_data) < 50) {
+  warning("Only ", length(samples_all_data), " samples with complete data. Consider checking data completeness.")
+}
+
+# Subset all matrices to common samples
+phylo_dist_all <- phylo_dist_matrix[samples_all_data, samples_all_data]
+micro_dist_all <- dist_matrix_bray[samples_all_data, samples_all_data]
+geo_dist_all <- geo_dist_matrix[samples_all_data, samples_all_data]
+
+# Get matches metadata
+metadata_all <- metadata_analysis[samples_all_data, ]
+```
+
+
+
 
