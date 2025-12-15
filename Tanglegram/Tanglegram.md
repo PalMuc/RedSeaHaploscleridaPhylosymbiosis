@@ -92,3 +92,55 @@ micro_dend_uunifrac_matched$labels <- paste0(
   ")"
 )
 ```
+
+### Convert to dendrograms and create dendlists
+```python
+# Convert host tree to dendrogram
+host_dend_matched <- as.dendrogram(as.hclust(host_tree_matched))
+
+# Convert microbiome hclust to dendrograms
+micro_dend_bray_dend <- as.dendrogram(micro_dend_bray_matched)
+micro_dend_wunifrac_dend <- as.dendrogram(micro_dend_wunifrac_matched)
+micro_dend_uunifrac_dend <- as.dendrogram(micro_dend_uunifrac_matched)
+```
+
+### Create dendlists and untangle
+```python
+# Create dendlists
+dends_bray <- dendlist(host_dend_matched, micro_dend_bray_dend)
+dends_bray_untangled <- untangle(dends_bray, method = "step2side")
+
+dends_wunifrac <- dendlist(host_dend_matched, micro_dend_wunifrac_dend)
+dends_wunifrac_untangled <- untangle(dends_wunifrac, method = "step2side")
+
+dends_uunifrac <- dendlist(host_dend_matched, micro_dend_uunifrac_dend)
+dends_uunifrac_untangled <- untangle(dends_uunifrac, method = "step2side")
+
+# Calculate entanglement
+entanglement_bray_final <- entanglement(dends_bray_untangled)
+entanglement_wunifrac_final <- entanglement(dends_wunifrac_untangled)
+entanglement_uunifrac_final <- entanglement(dends_uunifrac_untangled)
+
+cat("Bray-Curtis:", round(entanglement_bray_final, 4), "\n")
+cat("Weighted UniFrac:", round(entanglement_wunifrac_final, 4), "\n")
+cat("Unweighted UniFrac:", round(entanglement_uunifrac_final, 4), "\n")
+```
+
+### Plot tanglegram 
+```python
+tanglegram(
+  dends_bray_untangled, 
+  highlight_distinct_edges = FALSE, 
+  common_subtrees_color_lines = FALSE, 
+  highlight_branches_lwd = FALSE, 
+  lwd = 1,
+  main_left = "Host Phylogeny",
+  main_right = "Microbiome Dendrogram (Bray-Curtis)",
+  main = paste0("Entanglement = ", round(entanglement_bray_final, 3)),
+  cex_main = 1,
+  columns_width = c(2, 2, 2),
+  lab.cex = 0.45,
+  margin_inner = 3,
+  margin_outer = 1
+)
+```
