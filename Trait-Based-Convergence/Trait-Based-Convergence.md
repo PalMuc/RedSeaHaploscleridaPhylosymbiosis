@@ -83,3 +83,23 @@ write.csv(metadata_analysis[, c("Sample", "Clade", "Microbial_Type", "Longitude"
           row.names = FALSE)
 ```
 
+### Calculate geographic distances between all samples
+```python
+# Extract coordinates - now from merged data
+coords <- metadata_analysis[, c("Longitude", "Latitude")]
+rownames(coords) <- metadata_analysis$Sample
+
+# Remove samples without coordinates
+coords_complete <- coords[complete.cases(coords), ]
+
+# Calculate geographic distance matrix (in km)
+geo_dist_matrix <- distm(coords_complete, fun = distHaversine) / 1000  # Convert to km
+rownames(geo_dist_matrix) <- rownames(coords_complete)
+colnames(geo_dist_matrix) <- rownames(coords_complete)
+
+# Save geographic distances
+write.csv(geo_dist_matrix,
+          "Phylosymbiosis_results/geographic_distance_matrix_km.csv")
+```
+
+
