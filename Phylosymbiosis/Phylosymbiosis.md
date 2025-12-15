@@ -183,7 +183,7 @@ colour_clades <- c(
   "G22" = "red4"
 )
 
-# Generate Order-level colors
+# Generate Order-level colours
 tax_data$Order_clean <- ifelse(is.na(tax_data$Order) | tax_data$Order == "NA",
                                "Unclassified", tax_data$Order)
 
@@ -198,7 +198,7 @@ tax_data$Full_Order <- paste(
 unique_orders <- unique(tax_data$Full_Order)
 n_orders <- length(unique_orders)
 
-# Generate colors
+# Generate colours
 if(n_orders <= 74) {
   qual_col_pals <- brewer.pal.info[brewer.pal.info$category == 'qual',]
   col_vector <- unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
