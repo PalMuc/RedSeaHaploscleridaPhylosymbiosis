@@ -1,6 +1,6 @@
-# Trait-based convergence, not co-evolution, structures microbiome assembly in marine sponges
+# Trait-based filtering, not co-evolution, structures microbiome assembly in marine sponges
 
-Jo?lle van der Sprong <sup>1,?</sup>; Vani Tirumalasetty <sup>1</sup>; Simone Sch?tzle <sup>1</sup>; Oliver Voigt <sup>1</sup>; Dirk Erpenbeck <sup>1,2</sup>; Gert W?rheide <sup>1,2,3</sup>; Sergio Vargas <sup>1,?</sup>
+Joëlle van der Sprong <sup>1,?</sup>; Vani Tirumalasetty <sup>1</sup>; Simone Schätzle <sup>1</sup>; Oliver Voigt <sup>1</sup>; Dirk Erpenbeck <sup>1,2</sup>; Gert Wörheide <sup>1,2,3</sup>; Sergio Vargas <sup>1,?</sup>
 
 ----------
 
