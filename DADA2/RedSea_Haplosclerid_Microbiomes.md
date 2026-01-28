@@ -151,7 +151,7 @@ red_sea_taxa.print_noMt_noChloro <- red_sea_taxa.print[!(row.names(red_sea_taxa.
 
 write.table(red_sea_taxa.print_noMt_noChloro, "./Data/ASVs_Taxonomy_noMt_noChloro.tsv", sep = "\t", quote=F, col.names=NA)
 ```
-Some of the taxon assignments cannot be trusted if classification does not go beyond the kingdom level. To remove these, we checked the NA entries in the taxon table (= NA at the Kingdom and Phylum level) using BLAST. To filter for these, we performed the following steps:
+Some of the taxon assignments cannot be trusted if classification does not go beyond the kingdom level. To remove these, we checked the NA entries in the taxon table (= NA at the Kingdom and Phylum level) using BLAST. To filter for these (see file 'blast undefined taxa'), we performed the following steps:
 
 
 BLAST-validated contaminants
