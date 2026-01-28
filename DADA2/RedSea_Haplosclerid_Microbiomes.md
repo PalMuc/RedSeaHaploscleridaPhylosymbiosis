@@ -151,4 +151,45 @@ red_sea_taxa.print_noMt_noChloro <- red_sea_taxa.print[!(row.names(red_sea_taxa.
 
 write.table(red_sea_taxa.print_noMt_noChloro, "./Data/ASVs_Taxonomy_noMt_noChloro.tsv", sep = "\t", quote=F, col.names=NA)
 ```
+Some of the taxon assignments cannot be trusted if classification does not go beyond the kingdom level. To remove these, we checked the NA entries in the taxon table (= NA at the Kingdom and Phylum level) using BLAST. To filter for these, we performed the following steps:
+
+
+BLAST-validated contaminants
+```python
+blast_contaminants <- c("ASV_12", "ASV_123", "ASV_363", "ASV_499", "ASV_1077", 
+                        "ASV_1703", "ASV_1939", "ASV_2036", "ASV_2167", "ASV_2209",
+                        "ASV_2905", "ASV_2955", "ASV_3103", "ASV_3117", "ASV_3238",
+                        "ASV_4171", "ASV_4296", "ASV_5143", "ASV_5376", "ASV_5382",
+                        "ASV_5703", "ASV_5791", "ASV_6449", "ASV_6667", "ASV_6688",
+                        "ASV_6958", "ASV_6959", "ASV_7036", "ASV_7106", "ASV_7608",
+                        "ASV_7610", "ASV_7751", "ASV_7753", "ASV_7882", "ASV_8172",
+                        "ASV_8236", "ASV_8266", "ASV_8830", "ASV_8832", "ASV_9296",
+                        "ASV_9419", "ASV_9454", "ASV_9460", "ASV_9461", "ASV_9470")
+
+# Combine all contaminant ASVs
+all_contaminants <- unique(c(mt_ASVs, chloro_ASVs, blast_contaminants))
+
+# Filter tables
+asv_tab_clean <- asv_tab[!(row.names(asv_tab) %in% all_contaminants),]
+red_sea_taxa.print_clean <- red_sea_taxa.print[!(row.names(red_sea_taxa.print) %in% all_contaminants),]
+
+# Write output files
+write.table(asv_tab_clean, "ASVs_Counts_clean.tsv", sep="\t", quote=F, col.names=NA)
+write.table(red_sea_taxa.print_clean, "ASVs_Taxonomy_clean.tsv", sep="\t", quote=F, col.names=NA)
+```
+
+How many reads are contaminants?
+```python
+contaminant_reads <- sum(asv_tab[rownames(asv_tab) %in% blast_contaminants,])
+total_reads <- sum(asv_tab)
+percentage <- (contaminant_reads / total_reads) * 100
+
+cat("Contaminant reads:", contaminant_reads, "\n")
+cat("Total reads:", total_reads, "\n") 
+cat("Percentage:", round(percentage, 2), "%\n")
+
+# Check ASV_12*
+cat("\nASV_12 total reads:", sum(asv_tab["ASV_12",]), "\n")
+```
+
 
