@@ -11,23 +11,23 @@ library(ape)
 library(ggplot2)
 ```
 Make sure the following datasets are loaded:
-1. asv_tab_noMt_noChloro (count table)
-2. red_sea_taxa.print_noMt_noChloro (taxonomy table)
-3. sample_info (sample metadata with Clade column)
+1. asv_tab_clean (count table)
+2. red_sea_taxa.print_clean (taxonomy table)
+3. Sample_Information (sample metadata with Clade column)
 
 ### Check data
 ```python
-dim(asv_tab_noMt_noChloro)  #ASVs x Samples
-dim(red_sea_taxa.print_noMt_noChloro)  #ASVs x Taxonomy ranks
-dim(sample_info)  # Samples x metadata columns
+dim(asv_tab_clean)  #ASVs x Samples
+dim(red_sea_taxa.print_clean)  #ASVs x Taxonomy ranks
+dim(Sample_Information)  # Samples x metadata columns
 ```
 
 ### Create phyloseq object
 ```python
-OTU <- otu_table(asv_tab_noMt_noChloro, taxa_are_rows = TRUE)
-TAX <- tax_table(as.matrix(red_sea_taxa.print_noMt_noChloro))
-samples <- sample_data(sample_info)
-rownames(samples) <- sample_info$Sample
+OTU <- otu_table(asv_tab_clean, taxa_are_rows = TRUE)
+TAX <- tax_table(as.matrix(red_sea_taxa.print_clean))
+samples <- sample_data(Sample_Information)
+rownames(samples) <- Sample_Information$Sample
 
 physeq <- phyloseq(OTU, TAX, samples)
 print(physeq)
@@ -203,7 +203,7 @@ print(paste("Min:", round(min(sample_totals$total), 3), "Max:", round(max(sample
 phylum_colors_filtered <- phylum_colors[names(phylum_colors) %in% major_taxa_only]
 
 # Order clades according to phylogeny
-clade_phylo_order <- sample_info %>%
+clade_phylo_order <- Sample_Information %>%
   mutate(phylo_position = match(Sample, phylo_order)) %>%
   filter(!is.na(Clade), !is.na(phylo_position)) %>%
   group_by(Clade) %>%
