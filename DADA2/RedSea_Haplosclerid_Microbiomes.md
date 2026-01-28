@@ -154,7 +154,7 @@ write.table(red_sea_taxa.print_noMt_noChloro, "./Data/ASVs_Taxonomy_noMt_noChlor
 Some of the taxon assignments cannot be trusted if classification does not go beyond the kingdom level. To remove these, we checked the NA entries in the taxon table (= NA at the Kingdom and Phylum level) using BLAST. To filter for these (see file 'blast undefined taxa'), we performed the following steps:
 
 
-BLAST-validated contaminants
+### BLAST-validated contaminants
 ```python
 blast_contaminants <- c("ASV_12", "ASV_123", "ASV_363", "ASV_499", "ASV_1077", 
                         "ASV_1703", "ASV_1939", "ASV_2036", "ASV_2167", "ASV_2209",
