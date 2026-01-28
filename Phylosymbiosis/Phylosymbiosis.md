@@ -491,6 +491,10 @@ RF_wunifrac <- cospeciation(host_tree_pruned, micro_tree_wunifrac,
 
 RF_uunifrac <- cospeciation(host_tree_pruned, micro_tree_uunifrac, 
                             distance = "RF", permutations = 999)
+
+print(RF_bray)
+print(RF_wunifrac)
+print(RF_uunifrac)
 ```
 
 
