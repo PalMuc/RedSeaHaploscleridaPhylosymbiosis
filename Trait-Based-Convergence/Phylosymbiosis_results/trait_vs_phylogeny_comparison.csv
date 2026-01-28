@@ -1,0 +1,4 @@
+"Predictor","Mantel_r","p_value"
+"Trait (HMA/LMA)",0.232080719424695,1e-04
+"Phylogeny (raw)",0.170984008005203,1e-04
+"Phylogeny (controlling for geography)",0.159101623195852,1e-04

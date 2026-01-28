@@ -1,0 +1,5 @@
+"Test","Mantel_r","p_value","Interpretation"
+"Phylogeny | Geography",0.159101623195852,1e-04,"Phylogenetic effect after removing geography"
+"Geography | Phylogeny",0.134333414756022,1e-04,"Geographic effect after removing phylogeny"
+"Geography (simple)",0.148313577147864,1e-04,"Raw geographic effect"
+"Phylogeny (simple, from earlier)",0.170984008005203,1e-04,"Raw phylogenetic effect"
