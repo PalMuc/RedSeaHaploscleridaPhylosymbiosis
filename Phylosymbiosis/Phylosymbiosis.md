@@ -34,10 +34,10 @@ setwd("C:/Path/to/R-Phylosymbiosis/")
 ### Prepare all the data
 ```python
 # Load DADA2 outputs
-asv_counts <- read.table("ASVs_Counts_noMt_noChloro.tsv", 
+asv_counts <- read.table("ASVs_Counts_clean.tsv", 
                          sep="\t", header=TRUE, row.names=1)
 
-asv_taxonomy <- read.table("ASVs_Taxonomy_noMt_noChloro.tsv", 
+asv_taxonomy <- read.table("ASVs_Taxonomy_clean.tsv", 
                            sep="\t", header=TRUE, row.names=1)
 
 # Load metadata
