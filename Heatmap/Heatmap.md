@@ -12,7 +12,7 @@ library(ComplexHeatmap)
 ### Create data matrix for heatmap
 ```python
 # Concert to matrix and calculate total abundance ASVs
-asv_mat <- as.matrix(asv_tab_noMt_noChloro)
+asv_mat <- as.matrix(asv_tab_clean)
 
 # Calculate total abundance each ASV
 asv_totals <- rowSums(asv_mat)
