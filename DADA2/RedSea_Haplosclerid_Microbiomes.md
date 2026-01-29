@@ -1,5 +1,10 @@
 # R-Script DADA2 Pipeline
 
+Please check this tutorial before you proceed: https://benjjneb.github.io/dada2/tutorial.html
+and: https://www.bioconductor.org/packages//release/bioc/vignettes/dada2/inst/doc/dada2-intro.html
+
+
+
 
 ### Setup
 ```python
@@ -192,4 +197,7 @@ cat("Percentage:", round(percentage, 2), "%\n")
 cat("\nASV_12 total reads:", sum(asv_tab["ASV_12",]), "\n")
 ```
 
+### References
+
+Callahan BJ et al. DADA2: High resolution sample inference from Illumina amplicon data. Nat Methods 2016;13:581–83. https://doi.org/10.1038/nmeth.3869
 
