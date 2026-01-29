@@ -1,4 +1,4 @@
-# Ecological filtering, not coevolution, structures microbiome assembly in marine sponges
+# Ecological Filtering is a Better Predictor of Microbiome Assembly than Coevolution in Marine Sponges
 
 Joëlle van der Sprong <sup>1,§</sup>; Vani Tirumalasetty <sup>1</sup>; Simone Schätzle <sup>1</sup>; Oliver Voigt <sup>1</sup>; Dirk Erpenbeck <sup>1,2</sup>; Gert Wörheide <sup>1,2,3</sup>; Sergio Vargas <sup>1,§</sup>
 
