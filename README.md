@@ -4,9 +4,9 @@ Joëlle van der Sprong <sup>1,§</sup>; Vani Tirumalasetty <sup>1</sup>; Simone 
 
 ----------
 
-<sup>1</sup> Department of Earth and Environmental Sciences, Palaeontology and Geobiology, Ludwig-Maximilians-Universit?t M?nchen, Munich, Germany
+<sup>1</sup> Department of Earth and Environmental Sciences, Palaeontology and Geobiology, Ludwig-Maximilians-Universität München, Munich, Germany
 
-<sup>2</sup> GeoBio-Center, Ludwig-Maximilians-Universit?t M?nchen, Munich, Germany
+<sup>2</sup> GeoBio-Center, Ludwig-Maximilians-Universität München, Munich, Germany
 
 <sup>3</sup> Bavarian State Collections of Palaeontology and Geology, Munich, Germany
 
@@ -27,13 +27,10 @@ and this other tutorial: [https://astrobiomike.github.io/amplicon/dada2_workflow
 
 Understanding how microbiomes evolve in concert with their hosts is crucial for understanding the evolutionary dynamics of complex holobionts. Phylosymbiosis describes a pattern in which microbial community relationships parallel host phylogeny. Although often interpreted as evidence for host–microbiome co-diversification, phylosymbiosis can also arise from ecological filtering, a process in which hosts with similar physiology or morphological characteristics select for similar microbial communities independent of host relatedness. Here, we test co-diversification against ecological filtering as alternative explanations for phylosymbiosis in marine sponges (Order Haplosclerida) from the Red Sea. We inferred a robust host phylogeny using 1,153 target-captured genome-wide loci from 144 specimens and characterised their prokaryotic microbiomes via V4 16S rRNA gene amplicon sequencing. Host clade identity explained ~50% of microbial variation. However, topological analyses revealed high incongruence between host phylogeny and microbial community composition, and phylogenetic distance was only weakly correlated with microbiome dissimilarity. Partial Mantel tests confirmed that geography did not affect this signal. Trait-based analyses comparing high versus low microbial abundance (HMA–LMA) phenotypes, that are linked to sponge filtration physiology, revealed that this classification was a better predictor of microbiome composition than phylogenetic distance. Furthermore, phylogenetically distant clades with convergent HMA characteristics harboured similar microbiome profiles but had unique amplicon sequence variant (ASV) compositions, with between-trait dissimilarity exceeding within-trait dissimilarity. This demonstrates that sponge–microbiome associations are more influenced by ecological filtering than by host–microbe co-diversification, and suggests that some sponge holobionts may be better understood as ecological consortia than as coevolved units.
 
-## Description
-
-insert description here...
 
 ### Citation
 
-
+[...]
 
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 
