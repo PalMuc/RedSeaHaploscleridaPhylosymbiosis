@@ -34,10 +34,10 @@ setwd("C:/Path/to/R-Phylosymbiosis/")
 ### Prepare all the data
 ```python
 # Load DADA2 outputs
-asv_counts <- read.table("ASVs_Counts_clean.tsv", 
+asv_counts <- read.table("ASVs_Counts_clean_v138.2.tsv", 
                          sep="\t", header=TRUE, row.names=1)
 
-asv_taxonomy <- read.table("ASVs_Taxonomy_clean.tsv", 
+asv_taxonomy <- read.table("ASVs_Taxonomy_clean_v138.2.tsv", 
                            sep="\t", header=TRUE, row.names=1)
 
 # Load metadata
@@ -116,6 +116,7 @@ print(phyloseq_merged)
 ### Taxonomic summary
 ```python
 # Phylum-level aggregation
+# Note: SILVA v138.2 uses updated phylum names (e.g. Pseudomonadota instead of Proteobacteria)
 phyloseq_phylum <- tax_glom(phyloseq_filtered, "Phylum")
 phylum_abundance <- sort(colSums(t(otu_table(phyloseq_phylum))), decreasing = TRUE)
 print(head(phylum_abundance, 15))
@@ -295,7 +296,6 @@ write.csv(as.data.frame(permanova_result),
           "Beta_diversity_results/permanova_result_clade.csv")
 ```
 
-
 ### Pairwise PERMANOVA (post-hoc test)
 ```python
 # Pairwise comparisons between clades
@@ -379,10 +379,10 @@ if(length(samples_in_both) < 10) {
 }
 
 # Subset all matrices to matching samples
-dist_matrix_bray_match <- dist_matrix_bray[samples_in_both, samples_in_both]
+dist_matrix_bray_match     <- dist_matrix_bray[samples_in_both, samples_in_both]
 dist_matrix_wunifrac_match <- dist_matrix_wunifrac[samples_in_both, samples_in_both]
 dist_matrix_uunifrac_match <- dist_matrix_uunifrac[samples_in_both, samples_in_both]
-phylo_dist_matrix_match <- phylo_dist_matrix[samples_in_both, samples_in_both]
+phylo_dist_matrix_match    <- phylo_dist_matrix[samples_in_both, samples_in_both]
 ```
 
 ### Mantel tests
@@ -450,12 +450,12 @@ write.csv(phylo_dist_matrix_match,
 
 # Use the already matched distance matrices from Mantel tests
 # Convert to dist objects for hclust
-dist_bray_for_hclust <- as.dist(dist_matrix_bray_match)
+dist_bray_for_hclust     <- as.dist(dist_matrix_bray_match)
 dist_wunifrac_for_hclust <- as.dist(dist_matrix_wunifrac_match)
 dist_uunifrac_for_hclust <- as.dist(dist_matrix_uunifrac_match)
 
 # Create dendrograms (UPGMA clustering)
-micro_dend_bray <- hclust(dist_bray_for_hclust, method = "average")
+micro_dend_bray     <- hclust(dist_bray_for_hclust, method = "average")
 micro_dend_wunifrac <- hclust(dist_wunifrac_for_hclust, method = "average")
 micro_dend_uunifrac <- hclust(dist_uunifrac_for_hclust, method = "average")
 
@@ -466,7 +466,7 @@ host_tree_pruned <- keep.tip(host_tree, samples_in_both)
 # Calculate normalised Robinson-Foulds distances
 
 # Convert dendrograms to phylo objects
-micro_tree_bray <- as.phylo(micro_dend_bray)
+micro_tree_bray     <- as.phylo(micro_dend_bray)
 micro_tree_wunifrac <- as.phylo(micro_dend_wunifrac)
 micro_tree_uunifrac <- as.phylo(micro_dend_uunifrac)
 
@@ -500,5 +500,3 @@ print(RF_uunifrac)
 ### References
 
 Van der Windt N et al. Host evolutionary history drives prokaryotic diversity in the globally distributed sponge family Petrosiidae. Mol Ecol 2025;34:e70186. https://doi.org/10.1111/mec.70186
-
-
