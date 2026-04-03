@@ -4,8 +4,6 @@ Please check this tutorial before you proceed: https://benjjneb.github.io/dada2/
 and: https://www.bioconductor.org/packages//release/bioc/vignettes/dada2/inst/doc/dada2-intro.html
 
 
-
-
 ### Setup
 ```python
 knitr::opts_chunk$set(echo = TRUE)
@@ -103,6 +101,8 @@ colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "n
 rownames(track) <- sample.names
 #rownames(track[track[,1]<5000,])
 ```
+
+Note: A more recent version of the SILVA database has been used (v138.2) -> see folder!
 
 ### Assign Taxonomy
 ```python
