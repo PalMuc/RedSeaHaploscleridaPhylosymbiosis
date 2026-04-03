@@ -31,12 +31,12 @@ if(!requireNamespace("dada2", quietly = TRUE)){
   library(phytools)
 }
 ```
+
 ### Load the clean reads
 
 Samples "GW3237", "GW3325", "GW3404", "GW3416", "GW3494", "GW3580", "GW4166", "GW4251", "GW5875", "GW6059", "GW6104", "GW6140", "GW6158", and "GW6196" were discarded due to low read counts (<5000).
 
 Samples "GW3524", "GW4232", "GW5899", and "GW6180" were discarded due to missing UCE data.
-
 ```python
 path <- "./Data/Red_Sea_Prokaryotic_Microbiomes/Reads/"
 #list.files(path)
@@ -102,18 +102,13 @@ rownames(track) <- sample.names
 #rownames(track[track[,1]<5000,])
 ```
 
-Note: A more recent version of the SILVA database has been used (v138.2) -> see folder!
-
 ### Assign Taxonomy
-```python
-red_sea_taxa <- assignTaxonomy(seqtab.nochim,"./Data/Red_Sea_Prokaryotic_Microbiomes/SilvaDB/v138/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
 
-red_sea_taxa <- addSpecies(red_sea_taxa, "./Data/Red_Sea_Prokaryotic_Microbiomes/SilvaDB/v138/silva_species_assignment_v138.1.fa.gz")
-```
-
-Inspect taxonomy table
+Note: A more recent version of the SILVA database has been used (v138.2). The taxonomy assignment was performed on the HPC cluster. The resulting `taxa.rds` object was loaded locally.
 ```python
-red_sea_taxa.print <- red_sea_taxa # Removing sequence rownames for display only
+red_sea_taxa <- readRDS("./Data/taxa.rds")
+
+red_sea_taxa.print <- red_sea_taxa
 rownames(red_sea_taxa.print) <- NULL
 head(red_sea_taxa.print)
 ```
@@ -141,10 +136,9 @@ write.table(asv_tab, "./Data/ASVs_Counts.tsv", sep="\t", quote=F, col.names=NA)
 row.names(red_sea_taxa.print) <- sub(">", "", asv_headers)
 write.table(red_sea_taxa.print, "./Data/ASVs_Taxonomy.tsv", sep = "\t", quote=F, col.names=NA)
 
-
-# #filter mitochondria, column 5 contains the family info
-mt_ASVs <- sub(">", "", rownames(red_sea_taxa.print[which(red_sea_taxa.print[,5] == "Mitochondria"),]))
-chloro_ASVs <- sub(">", "", rownames(red_sea_taxa.print[which(red_sea_taxa.print[,4] == "Chloroplast"),]))
+# filter mitochondria, column 5 contains the family info
+mt_ASVs     <- asv_headers[which(red_sea_taxa.print[, 5] == "Mitochondria")]
+chloro_ASVs <- asv_headers[which(red_sea_taxa.print[, 4] == "Chloroplast")]
 
 asv_tab_noMt_noChloro <- asv_tab[!(row.names(asv_tab) %in% c(mt_ASVs, chloro_ASVs)),]
 
@@ -156,48 +150,84 @@ red_sea_taxa.print_noMt_noChloro <- red_sea_taxa.print[!(row.names(red_sea_taxa.
 
 write.table(red_sea_taxa.print_noMt_noChloro, "./Data/ASVs_Taxonomy_noMt_noChloro.tsv", sep = "\t", quote=F, col.names=NA)
 ```
-Some of the taxon assignments cannot be trusted if classification does not go beyond the kingdom level. To remove these, we checked the NA entries in the taxon table (= NA at the Kingdom and Phylum level) using BLAST. To filter for these (see file 'blast undefined taxa'), we performed the following steps:
 
+Some of the taxon assignments cannot be trusted if classification does not go beyond the kingdom level. To remove these, we checked the NA entries in the taxon table (= NA at the Kingdom and Phylum level) using BLAST against the NCBI `nt` database to check for eukaryotic contamination. Compared to v138.1, two ASVs (ASV_2167 and ASV_5791) were successfully assigned by SILVA v138.2 and removed from the contaminant list. New contaminants identified in this update include mitochondrial sequences from marine eukaryotes (*Amphimedon queenslandica*, *Callyspongia plicifera*, *Lotharella oceanica*), ASVs with weak BLAST hits (E > 1e-10), and ASVs with no BLAST hits at all.
 
 ### BLAST-validated contaminants
 ```python
-blast_contaminants <- c("ASV_12", "ASV_123", "ASV_363", "ASV_499", "ASV_1077", 
-                        "ASV_1703", "ASV_1939", "ASV_2036", "ASV_2167", "ASV_2209",
-                        "ASV_2905", "ASV_2955", "ASV_3103", "ASV_3117", "ASV_3238",
-                        "ASV_4171", "ASV_4296", "ASV_5143", "ASV_5376", "ASV_5382",
-                        "ASV_5703", "ASV_5791", "ASV_6449", "ASV_6667", "ASV_6688",
-                        "ASV_6958", "ASV_6959", "ASV_7036", "ASV_7106", "ASV_7608",
-                        "ASV_7610", "ASV_7751", "ASV_7753", "ASV_7882", "ASV_8172",
-                        "ASV_8236", "ASV_8266", "ASV_8830", "ASV_8832", "ASV_9296",
-                        "ASV_9419", "ASV_9454", "ASV_9460", "ASV_9461", "ASV_9470")
+# Export NA ASVs for BLAST validation
+na_asvs <- row.names(red_sea_taxa.print)[is.na(red_sea_taxa.print[, 1]) | is.na(red_sea_taxa.print[, 2])]
+na_asvs <- na_asvs[na_asvs %in% row.names(asv_tab)]
+na_seqs <- asv_seqs[row.names(red_sea_taxa.print) %in% na_asvs]
+write(c(rbind(paste0(">", na_asvs), na_seqs)), "./Data/ASVs_NA_forBLAST_v138.2.fa")
+
+# Split into batches of 50 for NCBI BLAST submission
+batch_size <- 50
+batches <- split(1:length(na_asvs), ceiling(1:length(na_asvs) / batch_size))
+for(i in seq_along(batches)){
+  idx <- batches[[i]]
+  batch_seqs <- c(rbind(paste0(">", na_asvs[idx]), na_seqs[idx]))
+  write(batch_seqs, paste0("./Data/BLAST_batch_", i, ".fa"))
+}
+
+blast_contaminants <- unique(c(
+  # --- Retained from v138.1 (ASV_2167 and ASV_5791 removed: now assigned) ---
+  "ASV_12", "ASV_123", "ASV_363", "ASV_499", "ASV_1077",
+  "ASV_1703", "ASV_1939", "ASV_2036", "ASV_2209",
+  "ASV_2905", "ASV_2955", "ASV_3103", "ASV_3117", "ASV_3238",
+  "ASV_4171", "ASV_4296", "ASV_5143", "ASV_5376", "ASV_5382",
+  "ASV_5703", "ASV_6449", "ASV_6667", "ASV_6688",
+  "ASV_6958", "ASV_6959", "ASV_7036", "ASV_7106", "ASV_7608",
+  "ASV_7610", "ASV_7751", "ASV_7753", "ASV_7882", "ASV_8172",
+  "ASV_8236", "ASV_8266", "ASV_8830", "ASV_8832", "ASV_9296",
+  "ASV_9419", "ASV_9454", "ASV_9460", "ASV_9461", "ASV_9470",
+  # --- New v138.2: eukaryotic mitochondrial DNA ---
+  # Amphimedon queenslandica mitochondrion (NC_008944.1)
+  "ASV_123",
+  # Callyspongia plicifera mitochondrion (NC_010206.1)
+  "ASV_8333",
+  # Lotharella oceanica mitochondrion (NC_029731.1 / NR_041489.2)
+  "ASV_7751", "ASV_9167",
+  # --- New v138.2: weak E-value BLAST hits (E > 1e-10, likely artefacts) ---
+  "ASV_2976", "ASV_3115", "ASV_5109", "ASV_6957",
+  "ASV_8881", "ASV_8895", "ASV_8958",
+  # --- New v138.2: no BLAST hits (likely artefacts) ---
+  "ASV_3032", "ASV_3852", "ASV_3982", "ASV_4450",
+  "ASV_5878", "ASV_6763", "ASV_7019", "ASV_7530",
+  "ASV_8043", "ASV_8544"
+))
 
 # Combine all contaminant ASVs
 all_contaminants <- unique(c(mt_ASVs, chloro_ASVs, blast_contaminants))
 
 # Filter tables
-asv_tab_clean <- asv_tab[!(row.names(asv_tab) %in% all_contaminants),]
+asv_tab_clean        <- asv_tab[!(row.names(asv_tab) %in% all_contaminants),]
 red_sea_taxa.print_clean <- red_sea_taxa.print[!(row.names(red_sea_taxa.print) %in% all_contaminants),]
 
 # Write output files
-write.table(asv_tab_clean, "ASVs_Counts_clean.tsv", sep="\t", quote=F, col.names=NA)
-write.table(red_sea_taxa.print_clean, "ASVs_Taxonomy_clean.tsv", sep="\t", quote=F, col.names=NA)
+write.table(asv_tab_clean,            "./Data/ASVs_Counts_clean_v138.2.tsv",   sep="\t", quote=F, col.names=NA)
+write.table(red_sea_taxa.print_clean, "./Data/ASVs_Taxonomy_clean_v138.2.tsv", sep="\t", quote=F, col.names=NA)
+saveRDS(asv_tab_clean,            "./Data/asv_tab_clean_v138.2.rds")
+saveRDS(red_sea_taxa.print_clean, "./Data/taxa_clean_v138.2.rds")
 ```
 
 How many reads are contaminants?
 ```python
-contaminant_reads <- sum(asv_tab[rownames(asv_tab) %in% blast_contaminants,])
-total_reads <- sum(asv_tab)
-percentage <- (contaminant_reads / total_reads) * 100
-
-cat("Contaminant reads:", contaminant_reads, "\n")
-cat("Total reads:", total_reads, "\n") 
-cat("Percentage:", round(percentage, 2), "%\n")
-
-# Check ASV_12*
-cat("\nASV_12 total reads:", sum(asv_tab["ASV_12",]), "\n")
+contaminant_reads <- sum(asv_tab[row.names(asv_tab) %in% all_contaminants,])
+total_reads       <- sum(asv_tab)
+cat("=== Contaminant summary ===\n")
+cat("Mitochondria removed:       ", length(mt_ASVs),            "ASVs\n")
+cat("Chloroplasts removed:       ", length(chloro_ASVs),        "ASVs\n")
+cat("BLAST contaminants removed: ", length(blast_contaminants), "ASVs\n")
+cat("Total removed:              ", length(all_contaminants),   "ASVs\n")
+cat("ASVs before filtering:      ", nrow(asv_tab),              "\n")
+cat("ASVs after filtering:       ", nrow(asv_tab_clean),        "\n")
+cat("Contaminant reads:          ", contaminant_reads,          "\n")
+cat("Total reads:                ", total_reads,                "\n")
+cat("Percentage contaminant:     ", round(contaminant_reads / total_reads * 100, 2), "%\n")
+cat("Percentage retained:        ", round((1 - contaminant_reads / total_reads) * 100, 2), "%\n")
 ```
 
 ### References
 
 Callahan BJ et al. DADA2: High resolution sample inference from Illumina amplicon data. Nat Methods 2016;13:581–83. https://doi.org/10.1038/nmeth.3869
-
