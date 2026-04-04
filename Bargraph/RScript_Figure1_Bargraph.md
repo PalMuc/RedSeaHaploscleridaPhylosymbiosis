@@ -128,7 +128,7 @@ head(plot_data)
 
 ### Load phylogeny to get correct sample order
 ```r
-rooted_red_sea_phylo <- read.tree("./Path/to/directory/Rooted_RAxML_RSHaplos_25.tre")
+rooted_red_sea_phylo <- read.tree("Rooted_RAxML_RSHaplos_25.tre")
 
 # Get phylogenetic order of samples
 phylo_order <- rooted_red_sea_phylo$tip.label
@@ -185,14 +185,14 @@ print(major_taxa_only)
 # This ensures bars sum to 1.0 for all samples
 plot_data_filtered <- plot_data_scaled %>%
   mutate(Phylum_plot = ifelse(Phylum_plot %in% major_taxa_only,
-                               as.character(Phylum_plot), "Other")) %>%
+                              as.character(Phylum_plot), "Other")) %>%
   filter(!is.na(Clade)) %>%
   group_by(Sample, Phylum_plot, Clade) %>%
   summarise(Abundance_scaled = sum(Abundance_scaled), .groups = "drop")
 
 # Factor with custom order
 plot_data_filtered$Phylum_plot <- factor(plot_data_filtered$Phylum_plot,
-                                          levels = taxa_custom_order)
+                                         levels = taxa_custom_order)
 
 # Check - should be close to 1.0 for all samples
 sample_totals <- plot_data_filtered %>%
@@ -217,7 +217,7 @@ print(clade_phylo_order)
 
 # Make Clade a factor in phylogenetic order
 plot_data_filtered$Clade <- factor(plot_data_filtered$Clade,
-                                    levels = clade_phylo_order)
+                                   levels = clade_phylo_order)
 ```
 
 ### Create the bargraph
@@ -238,7 +238,8 @@ Barplot_RS <- ggplot(plot_data_filtered,
   # Y-axis
   scale_y_continuous(breaks = seq(0, 1, 0.25),
                      limits = c(0, 1),
-                     expand = c(0, 0)) +
+                     expand = c(0, 0),
+                     oob = scales::squish) +
   # Theme
   theme_minimal() +
   theme(
@@ -260,7 +261,8 @@ Barplot_RS <- ggplot(plot_data_filtered,
     # Panel
     panel.spacing    = unit(0.5, "lines"),
     panel.grid       = element_blank(),
-    panel.background = element_rect(fill = "grey92", color = NA),
+    panel.background = element_blank(),
+    plot.background  = element_rect(fill = "white", color = NA),
     plot.margin      = margin(10, 10, 10, 10)
   ) +
   labs(
@@ -276,6 +278,8 @@ print(Barplot_RS)
 ggsave("Barplot_RS_v138.2.pdf", plot = Barplot_RS,
        width = 14, height = 5, dpi = 300)
 ggsave("Barplot_RS_v138.2.png", plot = Barplot_RS,
+       width = 14, height = 5, dpi = 300)
+ggsave("Barplot_RS_v138.2.svg", plot = Barplot_RS,
        width = 14, height = 5, dpi = 300)
 ```
 
