@@ -203,7 +203,9 @@ blast_contaminants <- unique(c(
   # --- New v138.2: no BLAST hits (likely artefacts) ---
   "ASV_3032", "ASV_3852", "ASV_3982", "ASV_4450",
   "ASV_5878", "ASV_6763", "ASV_7019", "ASV_7530",
-  "ASV_8043", "ASV_8544"
+  "ASV_8043", "ASV_8544",
+  # --- New v138.2: no BLAST hits (identified after correcting filter prefix bug) ---
+  "ASV_6574", "ASV_9447"
 ))
 
 # Combine all contaminant ASVs
