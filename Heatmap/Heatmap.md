@@ -29,8 +29,7 @@ asv_heat <- asv_rel_sqrt
 
 ### Generate ASV order table
 This table is used to order the ASV columns in the heatmap by taxonomy (Phylum > Class > Order).
-It is generated fresh from the current top 100 ASVs and `red_sea_taxa.print_clean` to ensure
-consistency with the filtered dataset.
+It is generated from the current top 100 ASVs and `red_sea_taxa.print_clean`.
 ```r
 asv_order_new <- data.frame(
   ASV    = top_asvs,
