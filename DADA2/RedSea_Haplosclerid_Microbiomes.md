@@ -146,7 +146,6 @@ chloro_ASVs <- row.names(red_sea_taxa.print)[which(red_sea_taxa.print[, 4] == "C
 # Verify filter works correctly
 cat("Mitochondria ASVs found: ", length(mt_ASVs), "\n")
 cat("Chloroplast ASVs found:  ", length(chloro_ASVs), "\n")
-cat("ASV_63 in chloro_ASVs:   ", "ASV_63" %in% chloro_ASVs, "\n")  # Should be TRUE
 
 asv_tab_noMt_noChloro <- asv_tab[!(row.names(asv_tab) %in% c(mt_ASVs, chloro_ASVs)),]
 
