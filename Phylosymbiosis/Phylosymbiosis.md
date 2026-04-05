@@ -6,7 +6,7 @@ See original script on: github.com/nielsvanderwindt/2025_Petrosiidae-phylosymbio
 Before starting this pipeline, I recommend looking at the DADA2 pipeline. In that respective folder, all the files and outputs are further used here.
 
 ### Setup
-```python
+```r
 # Load necessary packages
 library(phyloseq)
 library(microbiome)
@@ -27,12 +27,45 @@ library(DT)
 ```
 
 ### Set working directory
-```python
+```r
 setwd("C:/Path/to/R-Phylosymbiosis/")
 ```
 
+### Generate ASV phylogenetic tree (for UniFrac)
+
+The ASV phylogenetic tree is required for weighted and unweighted UniFrac distance calculations.
+It is generated outside of R using MAFFT (alignment) and RAxML (phylogenetic inference),
+both executed on an HPC cluster.
+
+**Step 1: Export filtered ASV sequences (R)**
+
+Run this at the end of the DADA2 pipeline, after contaminant filtering:
+```r
+# Write filtered FASTA for MAFFT/RAxML input
+clean_seqs    <- asv_seqs[sub(">", "", asv_headers) %in% row.names(asv_tab_clean)]
+clean_headers <- paste0(">", row.names(asv_tab_clean))
+asv_fasta_clean <- c(rbind(clean_headers, clean_seqs))
+write(asv_fasta_clean, "./Data/ASVs_clean_v138.2.fa")
+cat("Written", length(clean_seqs), "sequences to ASVs_clean_v138.2.fa\n")
+```
+
+**Step 2: Align sequences with MAFFT (HPC cluster)**
+```bash
+mafft --retree 2 --maxiterate 2 --thread 16 ASVs_clean_v138.2.fa > ASVs_clean_v138.2_aligned.fa
+```
+
+**Step 3: Infer phylogenetic tree with RAxML (HPC cluster)**
+
+A fast maximum likelihood search without bootstrapping (`-f d`) is used, as bootstrap
+support values are not required for UniFrac distance calculations.
+```bash
+~/RAxML/standard-RAxML-8.2.13/raxmlHPC-PTHREADS-AVX -f d -m GTRGAMMA -p 16647 -s ASVs_clean_v138.2_aligned.fa -n ASV_tree_v138.2 -T 32
+```
+
+The resulting tree file `RAxML_bestTree.ASV_tree_v138.2` is then loaded into R below.
+
 ### Prepare all the data
-```python
+```r
 # Load DADA2 outputs
 asv_counts <- read.table("ASVs_Counts_clean_v138.2.tsv", 
                          sep="\t", header=TRUE, row.names=1)
@@ -48,8 +81,8 @@ rownames(sample_metadata)[1:10]
 all(colnames(asv_counts) %in% rownames(sample_metadata))
 all(rownames(sample_metadata) %in% colnames(asv_counts))
 
-# Load phylogenetic tree
-asv_tree <- read.tree("ASV_tree_GTR.nwk")
+# Load ASV phylogenetic tree (RAxML best-scoring ML tree, no bootstraps)
+asv_tree <- read.tree("RAxML_bestTree.ASV_tree_v138.2")
 
 # Create phyloseq object
 phyloseq_object <- phyloseq(
@@ -66,20 +99,20 @@ saveRDS(phyloseq_object, "phyloseq_object.rds")
 ```
 
 ### Quality control + filtering
-```python
+```r
 # Rarefaction curves
 rarecurve(as.data.frame(t(otu_table(phyloseq_object))), 
           step = 100, col = "blue", label = FALSE,
           main = "Rarefaction Curves")
 
-## Check read distribution
+# Check read distribution
 print(summary(sample_sums(phyloseq_object)))
 
 hist(sample_sums(phyloseq_object), breaks = 30, col = "steelblue",
      main = "Read counts per sample", 
      xlab = "Number of reads")
 
-## Identify and remove low-quality samples
+# Identify and remove low-quality samples
 low_threshold <- 5000
 low_samples <- names(sample_sums(phyloseq_object)[sample_sums(phyloseq_object) < low_threshold])
 print(low_samples)
@@ -93,7 +126,7 @@ print(summary(sample_sums(phyloseq_filtered)))
 ```
 
 ### Create data subsets
-```python
+```r
 # Rarefied dataset (for alpha diversity)
 phyloseq_rarefied <- rarefy_even_depth(phyloseq_filtered, rngseed = 123)
 print(phyloseq_rarefied)
@@ -114,9 +147,11 @@ print(phyloseq_merged)
 ```
 
 ### Taxonomic summary
-```python
+```r
 # Phylum-level aggregation
-# Note: SILVA v138.2 uses updated phylum names (e.g. Pseudomonadota instead of Proteobacteria)
+# Note: SILVA v138.2 uses updated phylum names (e.g. Pseudomonadota instead of Proteobacteria,
+# Cyanobacteriota instead of Cyanobacteria, Chloroflexota instead of Chloroflexi,
+# Actinomycetota instead of Actinobacteriota)
 phyloseq_phylum <- tax_glom(phyloseq_filtered, "Phylum")
 phylum_abundance <- sort(colSums(t(otu_table(phyloseq_phylum))), decreasing = TRUE)
 print(head(phylum_abundance, 15))
@@ -130,7 +165,7 @@ tax_data <- data.frame(
 ```
 
 ### Exploratory plots
-```python
+```r
 # ASV abundance distribution
 phyloseq_plot1 <- ggplot(tax_data, aes(Abundance)) +
   geom_histogram(bins = 50, fill = "steelblue", alpha = 0.8) +
@@ -172,7 +207,7 @@ print(phyloseq_plot3)
 ```
 
 ### Colour palettes
-```python
+```r
 colour_clades <- c(
   "G01" = "blue3", "G02" = "cadetblue", "G03" = "chocolate4",
   "G04" = "purple3", "G05" = "darkolivegreen", "G06" = "greenyellow",
@@ -218,7 +253,7 @@ write.csv(data.frame(Order = names(colour_orders), Colour = colour_orders),
 ## Beta-diversity
 
 ### NMDS plots
-```python
+```r
 # Create output directory
 dir.create("Beta_diversity_results", showWarnings = FALSE)
 
@@ -271,7 +306,7 @@ ggsave(filename = "Plot_NMDS_bray.png",
 ```
 
 ### PERMANOVA
-```python
+```r
 # Get metadata and remove NAs
 metadata <- as(sample_data(phyloseq_compositional), "data.frame")
 metadata_clean <- metadata[!is.na(metadata$Clade), ]
@@ -288,7 +323,7 @@ permanova_result <- adonis2(dist_bray ~ Clade,
                             permutations = 999)
 print(permanova_result)
 
-# Table
+# Interactive table
 datatable(permanova_result)
 
 # Save results
@@ -297,7 +332,7 @@ write.csv(as.data.frame(permanova_result),
 ```
 
 ### Pairwise PERMANOVA (post-hoc test)
-```python
+```r
 # Pairwise comparisons between clades
 pairwise_result <- pairwise.adonis(
   dist_bray, 
@@ -318,13 +353,11 @@ write.csv(as.data.frame(pairwise_result),
 ## Mantel Tests
 
 ### Data preparation
-```python
+```r
 # Create output directory
 dir.create("Phylosymbiosis_results", showWarnings = FALSE)
 
 # Generate microbiome distance matrices
-
-# Use phyloseq_clades (samples with clade info only)
 # Bray-Curtis dissimilarity
 dist_matrix_bray <- as.matrix(distance(phyloseq_compositional, method = "bray"))
 
@@ -334,10 +367,7 @@ dist_matrix_wunifrac <- as.matrix(distance(phyloseq_compositional, method = "wun
 # Unweighted UniFrac (phylogenetic, presence/absence)
 dist_matrix_uunifrac <- as.matrix(distance(phyloseq_compositional, method = "uunifrac"))
 
-
 # Load host phylogenetic tree and calculate distances
-
-# Load host phylogenetic tree
 host_tree <- read.tree("C:/Path/to/directory/Rooted_RAxML_RSHaplos_25.tre")
 print(head(host_tree$tip.label, 10))
 
@@ -348,14 +378,10 @@ phylo_dist_matrix <- cophenetic(host_tree)
 write.csv(phylo_dist_matrix, 
           "Phylosymbiosis_results/host_phylogenetic_distance_matrix.csv")
 
-
 # Match sample names between matrices
-
-# Get sample names
 micro_samples <- rownames(dist_matrix_bray)
 phylo_samples <- rownames(phylo_dist_matrix)
 
-# Find overlapping samples
 samples_in_both <- intersect(micro_samples, phylo_samples)
 
 # Check for mismatches
@@ -372,7 +398,6 @@ if(length(missing_from_micro) > 0) {
   print(missing_from_micro)
 }
 
-# Subset matrices to matching samples only
 if(length(samples_in_both) < 10) {
   stop("ERROR: Too few matching samples (", length(samples_in_both), 
        "). Check matches between microbiome and phylogeny")
@@ -386,7 +411,7 @@ phylo_dist_matrix_match    <- phylo_dist_matrix[samples_in_both, samples_in_both
 ```
 
 ### Mantel tests
-```python
+```r
 # Mantel test 1: Bray-Curtis vs Host Phylogeny
 mantel_bray <- mantel(dist_matrix_bray_match, 
                       phylo_dist_matrix_match, 
@@ -412,7 +437,7 @@ mantel_uunifrac <- mantel(dist_matrix_uunifrac_match,
 mantel_results <- data.frame(
   Distance_Method = c("Bray-Curtis", "Weighted UniFrac", "Unweighted UniFrac"),
   Mantel_r = c(mantel_bray$statistic, mantel_wunifrac$statistic, mantel_uunifrac$statistic),
-  p_value = c(mantel_bray$signif, mantel_wunifrac$signif, mantel_uunifrac$signif),
+  p_value  = c(mantel_bray$signif, mantel_wunifrac$signif, mantel_uunifrac$signif),
   Significance = c(
     ifelse(mantel_bray$signif < 0.001, "***", 
            ifelse(mantel_bray$signif < 0.01, "**",
@@ -444,17 +469,14 @@ write.csv(phylo_dist_matrix_match,
           "Phylosymbiosis_results/phylo_distance_matrix_matched.csv")
 ```
 
-### Robinson Foulds
-```python
-# Create microbiome dendrograms from matched distance matrices 
-
-# Use the already matched distance matrices from Mantel tests
-# Convert to dist objects for hclust
+### Robinson-Foulds distances
+```r
+# Convert matched distance matrices to dist objects for hclust
 dist_bray_for_hclust     <- as.dist(dist_matrix_bray_match)
 dist_wunifrac_for_hclust <- as.dist(dist_matrix_wunifrac_match)
 dist_uunifrac_for_hclust <- as.dist(dist_matrix_uunifrac_match)
 
-# Create dendrograms (UPGMA clustering)
+# Create microbiome dendrograms (UPGMA clustering)
 micro_dend_bray     <- hclust(dist_bray_for_hclust, method = "average")
 micro_dend_wunifrac <- hclust(dist_wunifrac_for_hclust, method = "average")
 micro_dend_uunifrac <- hclust(dist_uunifrac_for_hclust, method = "average")
@@ -462,15 +484,12 @@ micro_dend_uunifrac <- hclust(dist_uunifrac_for_hclust, method = "average")
 # Prune host tree to matching samples
 host_tree_pruned <- keep.tip(host_tree, samples_in_both)
 
-
-# Calculate normalised Robinson-Foulds distances
-
 # Convert dendrograms to phylo objects
 micro_tree_bray     <- as.phylo(micro_dend_bray)
 micro_tree_wunifrac <- as.phylo(micro_dend_wunifrac)
 micro_tree_uunifrac <- as.phylo(micro_dend_uunifrac)
 
-# Calculate nRF (0 = identical, 1 = completely different)
+# Calculate normalised Robinson-Foulds distances (0 = identical, 1 = completely different)
 nRF_bray <- RF.dist(host_tree_pruned, micro_tree_bray, normalize = TRUE)
 cat("Bray-Curtis nRF:", round(nRF_bray, 4), "\n")
 
@@ -480,9 +499,7 @@ cat("Weighted UniFrac nRF:", round(nRF_wunifrac, 4), "\n")
 nRF_uunifrac <- RF.dist(host_tree_pruned, micro_tree_uunifrac, normalize = TRUE)
 cat("Unweighted UniFrac nRF:", round(nRF_uunifrac, 4), "\n")
 
-
-## Cospeciation tests (RF with p-values)
-
+# Cospeciation tests (RF with p-values, 999 permutations)
 RF_bray <- cospeciation(host_tree_pruned, micro_tree_bray, 
                         distance = "RF", permutations = 999)
 
@@ -499,4 +516,4 @@ print(RF_uunifrac)
 
 ### References
 
-Van der Windt N et al. Host evolutionary history drives prokaryotic diversity in the globally distributed sponge family Petrosiidae. Mol Ecol 2025;34:e70186. https://doi.org/10.1111/mec.70186
+Van der Windt N et al. Host evolutionary history drives prokaryotic diversity in the globally distributed sponge family Petrosiidae. *Mol Ecol* 2025;**34**:e70186. https://doi.org/10.1111/mec.70186
