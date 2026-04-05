@@ -19,7 +19,6 @@
 "ASV_80","Chloroflexota","Dehalococcoidia","SAR202 clade"
 "ASV_88","Chloroflexota","Dehalococcoidia","SAR202 clade"
 "ASV_46","Chloroflexota","TK17",NA
-"ASV_63","Cyanobacteriota","Cyanobacteriia","Chloroplast"
 "ASV_9","Cyanobacteriota","Cyanobacteriia","Cyanobacteriales"
 "ASV_2","Cyanobacteriota","Cyanobacteriia","Synechococcales"
 "ASV_5","Cyanobacteriota","Cyanobacteriia","Synechococcales"
@@ -48,7 +47,6 @@
 "ASV_94","Pseudomonadota","Alphaproteobacteria","Puniceispirillales"
 "ASV_47","Pseudomonadota","Alphaproteobacteria","Rhodobacterales"
 "ASV_28","Pseudomonadota","Alphaproteobacteria","Rhodospirillales"
-"ASV_6","Pseudomonadota","Alphaproteobacteria","Rickettsiales"
 "ASV_57","Pseudomonadota","Alphaproteobacteria",NA
 "ASV_3","Pseudomonadota","Gammaproteobacteria","Burkholderiales"
 "ASV_4","Pseudomonadota","Gammaproteobacteria","Burkholderiales"
@@ -92,10 +90,12 @@
 "ASV_86","Pseudomonadota","Gammaproteobacteria","Pseudomonadales"
 "ASV_87","Pseudomonadota","Gammaproteobacteria","Pseudomonadales"
 "ASV_89","Pseudomonadota","Gammaproteobacteria","Pseudomonadales"
+"ASV_103","Pseudomonadota","Gammaproteobacteria","Steroidobacterales"
 "ASV_21","Pseudomonadota","Gammaproteobacteria",NA
 "ASV_49","Pseudomonadota","Gammaproteobacteria",NA
 "ASV_60","Pseudomonadota","Gammaproteobacteria",NA
 "ASV_36","Thermoproteota","Nitrososphaeria","Nitrosopumilales"
 "ASV_43","Thermoproteota","Nitrososphaeria","Nitrosopumilales"
 "ASV_59","Thermoproteota","Nitrososphaeria","Nitrosopumilales"
+"ASV_102","Thermoproteota","Nitrososphaeria","Nitrosopumilales"
 "ASV_91","Verrucomicrobiota","Verrucomicrobiia","Pedosphaerales"
