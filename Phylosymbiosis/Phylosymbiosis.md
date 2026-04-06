@@ -13,8 +13,8 @@ library(microbiome)
 library(vegan)
 library(ape)
 library(phytools)
-library(dendextend)
 library(phangorn)
+library(dendextend)
 library(ggtree)
 library(rcompanion)
 library(multcompView)
@@ -62,7 +62,8 @@ support values are not required for UniFrac distance calculations.
 ~/RAxML/standard-RAxML-8.2.13/raxmlHPC-PTHREADS-AVX -f d -m GTRGAMMA -p 16647 -s ASVs_clean_v138.2_aligned.fa -n ASV_tree_v138.2 -T 32
 ```
 
-The resulting tree file `RAxML_bestTree.ASV_tree_v138.2` is then loaded into R below.
+The resulting tree file `RAxML_bestTree.ASV_tree_v138.2` is unrooted. It is rooted using
+midpoint rooting in R before use in UniFrac calculations (see Mantel Tests section below).
 
 ### Prepare all the data
 ```r
@@ -84,7 +85,7 @@ all(rownames(sample_metadata) %in% colnames(asv_counts))
 # Load ASV phylogenetic tree (RAxML best-scoring ML tree, no bootstraps)
 asv_tree <- read.tree("RAxML_bestTree.ASV_tree_v138.2")
 
-# Create phyloseq object
+# Create phyloseq object (unrooted tree - used for Bray-Curtis based analyses)
 phyloseq_object <- phyloseq(
   otu_table(asv_counts, taxa_are_rows=TRUE),
   tax_table(as.matrix(asv_taxonomy)),
@@ -93,17 +94,17 @@ phyloseq_object <- phyloseq(
 )
 
 print(phyloseq_object)
-
-# Save original object
 saveRDS(phyloseq_object, "phyloseq_object.rds")
 ```
 
 ### Quality control + filtering
 ```r
 # Rarefaction curves
+pdf("Rarefaction_curves.pdf", width = 14, height = 8)
 rarecurve(as.data.frame(t(otu_table(phyloseq_object))), 
           step = 100, col = "blue", label = FALSE,
           main = "Rarefaction Curves")
+dev.off()
 
 # Check read distribution
 print(summary(sample_sums(phyloseq_object)))
@@ -257,15 +258,21 @@ write.csv(data.frame(Order = names(colour_orders), Colour = colour_orders),
 # Create output directory
 dir.create("Beta_diversity_results", showWarnings = FALSE)
 
+# Subset to samples with clade info
+metadata <- as(sample_data(phyloseq_compositional), "data.frame")
+metadata_clean <- metadata[!is.na(metadata$Clade), ]
+samples_with_clades <- rownames(metadata_clean)
+phyloseq_comp_clades <- prune_samples(samples_with_clades, phyloseq_compositional)
+
 # Calculate NMDS
-nmds_bray <- ordinate(phyloseq_compositional, "NMDS", "bray", trymax = 100)
+nmds_bray <- ordinate(phyloseq_comp_clades, "NMDS", "bray", trymax = 100)
 
 # Save NMDS results
 write.csv(nmds_bray$points, "Beta_diversity_results/nmds_bray_points.csv")
 saveRDS(nmds_bray, "Beta_diversity_results/nmds_bray.RDS")
 
 # Extract ordination data
-nmds_data <- plot_ordination(phyloseq_compositional, nmds_bray, 
+nmds_data <- plot_ordination(phyloseq_comp_clades, nmds_bray, 
                              type = "Samples", justDF = TRUE)
 
 # NMDS plot
@@ -357,14 +364,30 @@ write.csv(as.data.frame(pairwise_result),
 # Create output directory
 dir.create("Phylosymbiosis_results", showWarnings = FALSE)
 
-# Generate microbiome distance matrices
-# Bray-Curtis dissimilarity
+# Bray-Curtis dissimilarity (unrooted tree sufficient)
 dist_matrix_bray <- as.matrix(distance(phyloseq_compositional, method = "bray"))
 
-# Weighted UniFrac (phylogenetic + abundance)
+# Root ASV tree using midpoint rooting (required for UniFrac)
+asv_tree_rooted <- midpoint(asv_tree)  # phangorn::midpoint
+cat("ASV tree is rooted:", is.rooted(asv_tree_rooted), "\n")
+
+# Rebuild phyloseq object with rooted tree
+phyloseq_object <- phyloseq(
+  otu_table(asv_counts, taxa_are_rows=TRUE),
+  tax_table(as.matrix(asv_taxonomy)),
+  sample_data(sample_metadata),
+  phy_tree(asv_tree_rooted)
+)
+
+# Redo filtering and compositional transformation with rooted tree
+phyloseq_filtered <- prune_samples(sample_sums(phyloseq_object) >= 5000, phyloseq_object)
+phyloseq_filtered <- prune_taxa(taxa_sums(phyloseq_filtered) > 0, phyloseq_filtered)
+phyloseq_compositional <- microbiome::transform(phyloseq_filtered, "compositional")
+
+# Weighted UniFrac (requires rooted tree)
 dist_matrix_wunifrac <- as.matrix(distance(phyloseq_compositional, method = "wunifrac"))
 
-# Unweighted UniFrac (phylogenetic, presence/absence)
+# Unweighted UniFrac (requires rooted tree)
 dist_matrix_uunifrac <- as.matrix(distance(phyloseq_compositional, method = "uunifrac"))
 
 # Load host phylogenetic tree and calculate distances
