@@ -1,4 +1,4 @@
 "Distance_Method","Mantel_r","p_value","Significance"
-"Bray-Curtis",0.170984008005203,1e-04,"***"
-"Weighted UniFrac",0.113481294286058,9e-04,"***"
-"Unweighted UniFrac",0.0659899482124822,0.0439,"*"
+"Bray-Curtis",0.171002798266906,1e-04,"***"
+"Weighted UniFrac",0.109886785967674,9e-04,"***"
+"Unweighted UniFrac",0.0870855431004654,0.0069,"**"
