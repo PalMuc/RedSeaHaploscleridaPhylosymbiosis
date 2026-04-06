@@ -13,10 +13,15 @@ library(readxl)
 library(FSA)
 ```
 
+### Set working directory
+```r
+setwd("C:/Path/to/R-Ecological-Filtering/")
+```
+
 ### Load data
 ```r
 # Load sample data from Excel (same as used for maps)
-sample_data_full <- read_excel("C:/Path/to/directory/R-Phylosymbiosis/Supplementary_Table_1.xlsx")
+sample_data_full <- read_excel("Supplementary_Table_1.xlsx")
 
 # Rename ID column to Sample for consistency
 sample_data_full <- sample_data_full %>%
@@ -74,6 +79,9 @@ print(table(metadata_analysis$Microbial_Type))
 
 # Add back to phyloseq object
 sample_data(phyloseq_compositional)$Microbial_Type <- metadata_analysis$Microbial_Type
+
+# Create output directory
+dir.create("Phylosymbiosis_results", showWarnings = FALSE)
 
 # Save classification
 write.csv(metadata_analysis[, c("Sample", "Clade", "Microbial_Type", "Longitude", "Latitude")],
