@@ -1,0 +1,139 @@
+
+RAxML can't, parse the alignment file as phylip file 
+it will now try to parse it as FASTA file
+
+
+
+Using BFGS method to optimize GTR rate parameters, to disable this specify "--no-bfgs" 
+
+
+This is the RAxML Master Pthread
+
+This is RAxML Worker Pthread Number: 4
+
+This is RAxML Worker Pthread Number: 1
+
+This is RAxML Worker Pthread Number: 3
+
+This is RAxML Worker Pthread Number: 2
+
+This is RAxML Worker Pthread Number: 5
+
+This is RAxML Worker Pthread Number: 6
+
+This is RAxML Worker Pthread Number: 8
+
+This is RAxML Worker Pthread Number: 7
+
+This is RAxML Worker Pthread Number: 9
+
+This is RAxML Worker Pthread Number: 11
+
+This is RAxML Worker Pthread Number: 10
+
+This is RAxML Worker Pthread Number: 14
+
+This is RAxML Worker Pthread Number: 13
+
+This is RAxML Worker Pthread Number: 12
+
+This is RAxML Worker Pthread Number: 15
+
+This is RAxML Worker Pthread Number: 16
+
+This is RAxML Worker Pthread Number: 17
+
+This is RAxML Worker Pthread Number: 19
+
+This is RAxML Worker Pthread Number: 18
+
+This is RAxML Worker Pthread Number: 20
+
+This is RAxML Worker Pthread Number: 21
+
+This is RAxML Worker Pthread Number: 23
+
+This is RAxML Worker Pthread Number: 24
+
+This is RAxML Worker Pthread Number: 22
+
+This is RAxML Worker Pthread Number: 26
+
+This is RAxML Worker Pthread Number: 25
+
+This is RAxML Worker Pthread Number: 27
+
+This is RAxML Worker Pthread Number: 29
+
+This is RAxML Worker Pthread Number: 30
+
+This is RAxML Worker Pthread Number: 28
+
+This is RAxML Worker Pthread Number: 31
+
+
+This is RAxML version 8.2.12 released by Alexandros Stamatakis on May 2018.
+
+With greatly appreciated code contributions by:
+Andre Aberer      (HITS)
+Simon Berger      (HITS)
+Alexey Kozlov     (HITS)
+Kassian Kobert    (HITS)
+David Dao         (KIT and HITS)
+Sarah Lutteropp   (KIT and HITS)
+Nick Pattengale   (Sandia)
+Wayne Pfeiffer    (SDSC)
+Akifumi S. Tanabe (NRIFS)
+Charlie Taylor    (UF)
+
+
+Alignment has 393 distinct alignment patterns
+
+Proportion of gaps and completely undetermined characters in this alignment: 44.06%
+
+RAxML rapid hill-climbing mode
+
+Using 1 distinct models/data partitions with joint branch length optimization
+
+
+Executing 1 inferences on the original alignment using 1 distinct randomized MP trees
+
+All free model parameters will be estimated by RAxML
+GAMMA model of rate heterogeneity, ML estimate of alpha-parameter
+
+GAMMA Model parameters will be estimated up to an accuracy of 0.1000000000 Log Likelihood units
+
+Partition: 0
+Alignment Patterns: 393
+Name: No Name Provided
+DataType: DNA
+Substitution Matrix: GTR
+
+
+
+
+RAxML was called as follows:
+
+/home/jsprong/RAxML/standard-RAxML-8.2.13/raxmlHPC-PTHREADS-AVX -f d -m GTRGAMMA -p 16647 -s ASVs_clean_v138.2_aligned.fa -n ASV_tree_v138.2 -T 32 
+
+
+Partition: 0 with name: No Name Provided
+Base frequencies: 0.264 0.187 0.346 0.203 
+
+Inference[0]: Time 58966.692893 GAMMA-based likelihood -356734.899721, best rearrangement setting 25
+
+
+Conducting final model optimizations on all 1 trees under GAMMA-based models ....
+
+Inference[0] final GAMMA-based Likelihood: -356733.964128 tree written to file /home/jsprong/phylosymbiosis/RAxML/RAxML_result.ASV_tree_v138.2
+
+
+Starting final GAMMA-based thorough Optimization on tree 0 likelihood -356733.964128 .... 
+
+Final GAMMA-based Score of best tree -356731.539041
+
+Program execution info written to /home/jsprong/phylosymbiosis/RAxML/RAxML_info.ASV_tree_v138.2
+Best-scoring ML tree written to: /home/jsprong/phylosymbiosis/RAxML/RAxML_bestTree.ASV_tree_v138.2
+
+Overall execution time: 59960.411661 secs or 16.655670 hours or 0.693986 days
+
