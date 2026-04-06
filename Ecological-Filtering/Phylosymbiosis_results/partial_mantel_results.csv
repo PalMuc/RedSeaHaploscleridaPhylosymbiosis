@@ -1,0 +1,9 @@
+"Test","Mantel_r","p_value"
+"Phylogeny | Geography (Bray-Curtis)",0.159120578428155,1e-04
+"Geography | Phylogeny (Bray-Curtis)",0.134333853556189,1e-04
+"Geography simple (Bray-Curtis)",0.148315393752443,1e-04
+"Phylogeny simple (Bray-Curtis)",0.171002798266906,1e-04
+"Phylogeny | Geography (Weighted UniFrac)",0.100732307840795,0.0015
+"Geography | Phylogeny (Weighted UniFrac)",0.09537273569041,3e-04
+"Phylogeny | Geography (Unweighted UniFrac)",0.0752768803240864,0.0171
+"Geography | Phylogeny (Unweighted UniFrac)",0.124816245708378,1e-04
